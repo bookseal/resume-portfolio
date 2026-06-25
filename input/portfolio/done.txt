@@ -1,0 +1,56 @@
+제공해주신 출처를 바탕으로 이기찬 님의 뛰어난 경력, 핵심 포트폴리오, 그리고 기술적 성과들을 이력서 작성을 위해 체계적으로 정리해 드립니다. 이기찬 님의 강점은 **'압도적인 문제 해결 능력(CS)', '클라우드 네이티브 인프라(k3s/OCI) 구축 역량', 그리고 '실제 동작하는 AI 에이전트/MLOps 파이프라인 개발 능력'**으로 요약할 수 있습니다.
+
+---
+
+### 1. 핵심 경력 및 업무 성과 (Professional Experience)
+
+**1) Concentrix (Microsoft Support) - M365 Technical Support Engineer** (2025.08 – 2025.11)
+*   **압도적인 성과 달성:** 20명 이상의 엔지니어 중 평균 Rating 5점, 불만족도(DSAT) 0%, 문제 해결률(SRR) 92.7%로 전 지표에서 팀 내 1위를 기록했습니다.
+*   **복잡한 엔터프라이즈 문제 해결:** Entra ID 및 이메일 도메인 마이그레이션과 같은 고위험 프로젝트를 '백업-이관-복구'의 단계별 아키텍처 접근법으로 해결하여 데이터 손실 위험을 최소화했습니다.
+*   **VoC 기반 제품 영향력:** Microsoft 서비스 한글 품질 관련 글로벌 테스터로 선정되어, AI UX 피드백 및 기술적 근본 원인 분석(RCA)을 제품 그룹에 직접 제공했습니다.
+*   **리더십 및 팀 빌딩:** '파이어팀(Fireteam)'을 결성하여 동료들의 MS-900 등 인증 취득을 멘토링하고 팀 전체의 기술 역량을 끌어올렸습니다.
+
+**2) Bithabit - Full-Stack Cloud Infrastructure Owner / AI Architect** (2024.08 – 현재)
+*   **인프라 현대화 및 비용 절감:** 12개 이상의 레거시 서비스(systemd/Docker)를 통합 k3s(Kubernetes) 클러스터로 마이그레이션하여 배포 민첩성을 30% 향상시켰습니다. 또한, AWS EC2 기반 서비스를 OCI(Oracle Cloud)로 전면 마이그레이션하여 인프라 비용을 100% 절감했습니다.
+*   **네트워크 및 보안 아키텍처:** Traefik Middlewares와 cert-manager를 활용해 고가용성 인그레스를 구축하고, 와일드카드 TLS 및 제로 트러스트(Zero-trust) 내부 라우팅을 자동화했습니다.
+
+**3) FPT Software - Embedded Technical Support Engineer** (2024.10 – 2025.07)
+*   메모리 리버스 엔지니어링 및 로우레벨 프로토콜 분석을 통해 진단 불가능했던 시스템 오류를 해결했습니다.
+
+---
+
+### 2. 주요 AI 및 개발 포트폴리오 (Key Projects)
+
+**1) Project Sentinel (실시간 인지 어시스턴트)** 🏆 *메가존클라우드 AI 에이전트 해커톤 1등*
+*   **개요:** 대화 중 감정적 과열(고성 등)을 실시간 오디오 볼륨(RMS)과 피치로 분석하여 중재하는 AI 인지 어시스턴트입니다.
+*   **기술 스택:** Python, Gradio, NumPy, k3s (OCI).
+*   **특징:** 고비용 클라우드 API에 의존하지 않고 로컬 연산 기반으로 설계되었으며, OCI 무료 티어 리소스를 극대화하기 위해 k3s 환경에 배포되었습니다.
+
+**2) BookToss (자율형 AI 도서 검색 에이전트)** 🏆 *정보통신기획평가원 해커톤 2등*
+*   **개요:** API가 없는 서울시 25개 구 도서관 시스템을 직접 탐색하여 도서 대출 가능 여부를 확인하는 브라우저 기반 자동화 에이전트입니다.
+*   **성과:** 수동 검색 대비 소요 시간을 5분에서 1분으로 단축(80% 효율화)했습니다.
+*   **기술 스택:** LangGraph, OpenAI GPT-4o-mini, browser-use, Streamlit, Python.
+*   **특징:** 단순 순차 처리가 아닌 LangGraph의 상태 관리(State Management)를 활용해, 팝업이나 UI 예외 상황에 대처하는 '인간의 판단 프로세스'를 구현했습니다.
+
+**3) Daily Seongsu (성수역 혼잡도 예측 서비스)**
+*   **개요:** 하이브리드 클라우드 환경에서 구축한 엔드투엔드(End-to-End) MLOps 파이프라인 포트폴리오입니다.
+*   **아키텍처:** OCI Ampere A1(연산/Airflow), Supabase(PostgreSQL 데이터 계층), Hugging Face Spaces/Gradio(UI 쇼룸)의 3-Tier 하이브리드 엔진을 설계했습니다.
+*   **특징:** 데이터 엔지니어링, 전처리, AutoML 기반 모델 튜닝, Docker 환경 표준화, GitHub Actions 기반 CI/CD 구축까지 레벨별로 성숙도를 높여가며 개발되었습니다.
+
+**4) Bithabit (소규모 스터디 그룹용 습관 추적 웹 앱)**
+*   **개요:** 웹캠 타이머, GIF 자동 생성, 실시간 채팅 기능을 제공하는 프로덕션 레벨 서비스입니다.
+*   **기술 스택:** Flutter Web, FastAPI, SQLite, Email OTP + JWT Token, WebSockets.
+*   **특징:** 비밀번호 없는 Email OTP 인증 및 7일/30일 수명의 JWT 자동 로그인 시스템을 구현하였으며, Web Worker 기반으로 클라이언트 단에서 GIF를 생성하여 서버 부하를 줄였습니다.
+
+---
+
+### 3. 교육 및 기반 역량 (Education & Philosophy)
+
+*   **École 42 Seoul (2022 – 2024):** C/C++ 기반의 커스텀 표준 라이브러리, UNIX 쉘(minishell), 3D 엔진, 소켓 네트워킹(IRC 서버), 컨테이너 오케스트레이션 등 컴퓨터 사이언스의 핵심을 바닥부터 직접 구현하며 깊은 시스템 이해도를 쌓았습니다.
+*   **기술 철학 (High Agency):** 8년 전 Android Tasker를 활용한 자동화 경험에서 시작된 '기술을 조작하여 자유를 확보한다'는 철학이 현재의 LLM 에이전트 개발로 이어지고 있습니다. AI 도구가 주는 코드에 안주하지 않고 아키텍처의 '최적 해'를 고민하는 주도적인(High Agency) 엔지니어의 면모를 보여줍니다.
+
+---
+
+위 내용을 바탕으로 AWS AI Solution Architect, AI FDE(Forward Deployed Engineer), 혹은 Cloud Infrastructure Engineer 등 타겟 직무에 맞게 강조 포인트를 조절하여 이력서를 작성할 수 있습니다. 
+
+어떤 직무를 목표로 이력서를 작성하고 싶으신지 알려주시면, 해당 직무에 가장 적합한 1페이지 분량의 마크다운(MD) 이력서 초안을 다시 작성해 드리겠습니다.

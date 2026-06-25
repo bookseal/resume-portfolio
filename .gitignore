@@ -1,0 +1,14 @@
+# macOS
+.DS_Store
+
+# Portfolio / source projects already live in their own GitHub repos —
+# referenced here, not vendored (avoids stale duplicates, 75M+ of history,
+# and broken submodule gitlinks):
+#   github.com/bookseal/portfolio-bithabit
+#   github.com/bookseal/bithabit
+#   github.com/bookseal/Booktoss
+#   github.com/bookseal/daily_seongsu
+output/portfolio-bithabit/
+input/portfolio/bithabit/
+input/portfolio/booktoss/
+input/portfolio/daily_seongsu/

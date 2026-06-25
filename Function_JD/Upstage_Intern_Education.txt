@@ -1,0 +1,126 @@
+[Kernel AI Internship] AI Education - AI Product Builder Intern (체험형)
+부문
+Upstage
+직군
+Education
+직무
+Contents & Education
+경력사항
+경력 무관
+고용형태
+인턴
+* 본 ​공고는 ​Fast ​Campus 와 ​Upstage 가 공동으로 주관하는 ​AI ​Lab 교육 ​수료생 분들에 한해 ​지원하실 수 ​있으며, ​6/28(일)에 지원서 ​접수를 ​마감합니다.
+
+업스테이지는 ​AI 기술을 활용하여 ​비즈니스 ​문제를 해결하는 데 ​주력하고 ​있습니다. ​"Making AI Beneficial" ​이라는 비전과 ​"Building ​intelligence for ​the future ​of ​work" 라는 미션을 ​바탕으로, 단순한 ​업무 자동화를 넘어서 복잡한 의사결정 지원 및 비용 절감을 통해 기업의 생산성을 증진시킬 수 있는 AI 제품과 솔루션을 제공합니다. 이를 통해 우리는 기업들이 업무 처리 방식을 혁신하고 더욱 효율적으로 성장할 수 있도록 지원합니다.
+
+업스테이지는 누구나 손쉽게 AI 기술을 활용할 수 있도록 '사용이 쉬운 AI 솔루션'을 제공하는 것을 목표로 하고 있습니다. 이미 최고 수준의 OCR 기술과 문서 내 의미 있는 정보를 자동으로 추출하는 Key-Value 추출 기술을 보유하고 있으며, 최근에는 다양한 문서 레이아웃을 분석하는 Document Parsing 모델을 공개하였습니다. 또한 LLM 기술을 비즈니스 환경에 맞게 최적화한 Private LLM 서비스와, 세계 최고 수준의 AI 모델을 다양한 분야에서 손쉽게 활용할 수 있는 API 시리즈를 제공하며 AI가 실제 비즈니스에서 큰 가치를 창출할 수 있도록 노력하고 있습니다.
+
+이 포지션은 업스테이지 AI Education  부문에서 3개월간 진행되는 체험형 인턴십으로, Upstage 제품(Solar, Document Parse 등)을 가장 가까이에서 사용하며 그 경험을 교육 콘텐츠와 커뮤니티, 제품 피드백으로 연결하는 Developer Relations 역할입니다. 하나의 유스케이스를 직접 선정하여 데모 앱 빌드부터 콘텐츠 제작, 워크숍 진행, 제품팀 피드백 송부까지 DevRel의 풀 사이클을 3개월 안에 처음부터 끝까지 경험하게 됩니다. 인턴십이 끝나면 직접 빌드한 데모 앱, 공식 교육 콘텐츠로 배포되는 쿡북, 제품팀에 실제로 전달되는 리포트가 여러분의 이름으로 남게 됩니다.
+
+주요 업무
+데모 앱/스킬개발: Solar, Document Parse 등 Upstage 제품을 활용하여 선정한 유스케이스를 해결하는 데모 애플리케이션 및 스킬 개발
+교육 콘텐츠 제작: 빌드 과정과 결과물을 교육커리큘럼과 연계되는 쿡북, 튜토리얼 콘텐츠로 제작 및 업데이트
+워크숍 진행 및 사례 발굴: 지역별 Product 활용 워크숍을 진행하고, 활용 사례와 사용자 경험을 구조화하여 수집
+제품 피드백: 제품 사용 중 발견한 이슈를 재현 절차와 심각도, 사용자 경험을 포함한 QA 리포트로 작성하고, 인턴십 종료 시 개선 제안을 담은 mini-PRD를 제품팀에 송부
+데모데이 발표: 인턴십 마지막 주, 3개월간의 빌드·콘텐츠·피드백 결과물을 발표
+
+근무 형태 
+인턴십 (체험형, 3개월)
+온/오프라인 하이브리드 근무
+
+모집 절차 - 전체 온라인 진행
+서류 검토
+롤매칭 인터뷰 (1차/2차)
+컬처 인터뷰
+최종 결과 발표
+*절차는 상황에 따라 조정될 수 있습니다.
+
+근무환경
+Anywhere On Earth But Together! '어디서든' 함께 일할 수 있으며, 워크숍 준비 및 팀 논의 시 활용 가능한 오프라인 오피스는 스파크플러스 강남5호점(강남역 인근)에 위치해 있습니다.
+근무를 위한 카페 이용 시 음료 비용, 스터디룸 혹은 공유오피스 이용 비용 등을 지원해드립니다.
+업무 관련 소프트웨어, 도서, 자료 등 성장에 필요한 비용을 지원해드립니다.
+
+필수 사항
+AI/SW 부트캠프 수료(예정) 또는 그에 준하는 프로젝트 경험을 보유하신 분
+Python과 LLM API를 활용해 동작하는 프로토타입을 만들어 본 경험이 있으신 분
+자신이 만들고 배운 것을 다른 사람이 이해할 수 있는 글(튜토리얼, 블로그, 문서)로 정리할 수 있는 분
+사용자의 이야기를 듣고 구조화된 피드백 문서로 옮기는 일에 흥미가 있으신 분
+지역별 워크숍 진행을 위한 국내 출장이 가능하신 분
+
+우대 사항
+Solar API, Document Parse 등 Upstage 제품을 직접 사용해 본 경험이 있으신 분
+기술 블로그, 유튜브, 강의 등 기술 콘텐츠를 제작·공유해본 경험이 있으신 분
+스터디, 커뮤니티, 행사 등을 직접 기획하거나 운영해 본 경험이 있으신 분
+프롬프트 엔지니어링, RAG, AI 에이전트 등 LLM 애플리케이션 개발 경험이 있으신 분
+
+====================
+
+사전 질문
+업스테이지 제품을 체험한 후 간략한 평가를 남겨 주시기 바랍니다. (피드백 형식 및 분량 제한 없음)
+필수
+업스테이지는 Chat/Reasoning, Document Digitization, Information Extraction 등의 제품에 집중하고 있습니다.
+Upstage Console의 Upstage Studio와 Playground 또는 Upstage Console에서 Web 또는 API를 통해 직접 사용해 볼 수 있습니다.
+
+- Upstage Studio : https://studio.upstage.ai/
+- Playground : https://console.upstage.ai/playground/chat
+- Web 또는 API : https://console.upstage.ai/docs/getting-started
+
+* Product User Guide
+- Upstage Studio ver. : https://console.upstage.ai/docs/studio
+- Playground ver. : https://edu.upstage.ai/course/upstage-user-guide-playground
+- API ver. : https://edu.upstage.ai/course/upstage-user-guide-api
+답변
+답변
+0
+/ 10,000
+지원 분야와 관련된 업무 경험 또는 경력에 대해 자유롭게 기재해주세요.
+필수
+답변
+답변
+0
+/ 1,000
+선호하는 관심 분야가 있다면 모두 선택해주세요.
+필수
+Computer vision
+Natural language processing
+Multimodal modeling
+Data Collection & Processing
+직접 입력
+선호하는 프로그래밍 언어를 선택해주세요.
+필수
+선택하신 언어가 온라인 알고리즘 코딩 테스트에서 활용됩니다.
+Javascript
+Java
+C++
+Python
+언제부터 업스테이지에 합류하실 수 있나요?
+필수
+답변
+답변
+0
+/ 1,000
+어떤 경로로 지원하시게 되었나요?
+필수
+(예시)
+업스테이지 공식 채용 페이지
+링크드인(LinkedIn) 공고
+지인 추천
+사내 구성원 추천
+채용 설명회 / 컨퍼런스
+뉴스 기사 또는 블로그 콘텐츠
+기타 채용 플랫폼 (직접 입력)
+답변
+답변
+0
+/ 1,000
+GitHub URL
+답변
+답변
+0
+/ 1,000
+LinkedIn URL
+답변
+답변
+0
+/ 1,000
+강연, 세미나, 소개영상 등
