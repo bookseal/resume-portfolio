@@ -1,0 +1,306 @@
+﻿260705 Cognition Screening Call
+2026.07.06 월 오전 10:37 ・ 19분 23초
+이기찬 Interviewer
+
+
+이기찬 00:01
+Hello can you hear?
+
+Interviewer 00:03
+Hey good morning
+
+이기찬 00:04
+good morning I'm sorry I was confused the date for the Korea or America.
+I'm so sorry.
+
+Interviewer 00:13
+Ah, do you know I'm in Korea I'm in Seoul
+
+이기찬 00:17
+You are in Seoul but I confused the date, the meeting date, not the time because I was here in CL at a few days ago so I don't recognize the date change.
+So I created a calendar on the Monday because I said Monday afternoon.
+So I feel that oh I'm so sorry but it is okay now.
+
+Interviewer 00:43
+All right good morning A good.
+
+이기찬 00:46
+Yeah all good all good I'm in Seattle University of Washington at the Dormitory.
+
+Interviewer 00:57
+Ah okay okay so now you're in Washington
+
+이기찬 00:59
+Yes.
+
+Interviewer 01:01
+Ah so now it's evening for you.
+
+이기찬 01:03
+Yeah evening evening evening Sunday yes evening Sunday
+
+Interviewer 01:08
+it's even Sunday night.
+
+이기찬 01:09
+Ah it is okay. So I think I always have to think about the time zone between Seattle and Seoul.
+
+Interviewer 01:18
+Yeah indeed indeed. Yeah.
+That's a bit complicated thing but happy that, that you make time.
+So now you live in Seattle or just traveling there.
+What's the situation?
+
+이기찬 01:31
+I was chosen by students from the Korean government and for 30 students and we are attending the MNI MBA from the University of Washington.
+So I will back at 15 August.
+
+Interviewer 01:53
+Okay he said it's University of Washington.
+
+이기찬 02:01
+Yes
+
+Interviewer 02:03
+all right cool how is it going so far
+
+이기찬 02:05
+it's been one week and we are all software developers in that course.
+There is some LM app app application lab.
+So it is very useful as a developer who wants to become a become, who wants to create their own business.
+
+Interviewer 02:30
+You're good all right good stuff all right So yeah thank you for taking the time.
+So is that so I saw that you are sort of I mean let me start again actually you know what so yeah the talk today is because I'm working with cognition right they are looking for deployment engineer.
+Oh FDE in Korea FDE yeah yeah yeah so and I saw that that's
+
+Interviewer 03:01
+you've done that you've done some software engineering you've launched some startups that seem that you have coded yourself.
+So I was very keen to understand about your career what you're working on today what's your sort of career aspiration?
+And on my side, of course, I'm very happy to share about what cognition is looking for in the role itself to see if there's a match between the two.
+
+이기찬 03:22
+Yes. And is it okay to share my portfolio site to you now?
+Sure oh thank you. Yeah
+
+이기찬 03:37
+can you see my URL from the chat message?
+
+Interviewer 03:51
+Yeah I'm opening it now. Okay got it yeah
+
+이기찬 03:56
+and you can see the English version for them.
+And
+
+Interviewer 03:59
+yep
+
+Interviewer 04:12
+for your resume would you use that as well or you would use a different file?
+
+이기찬 04:16
+I used the different file just one page PDF from the, for the Cb.
+If you want the resume too, I will share that now.
+
+Interviewer 04:29
+Yeah yeah Reson would be nice as well.
+Okay good good good all right cool let me.
+So now you are lead FDE for KIB
+
+이기찬 04:43
+Yes Kiba
+
+Interviewer 04:45
+Okay and you sort of created your own startup bit habit can you tell me a little bit more about your current situation?
+
+이기찬 04:53
+Now I'm working as an FDE at the Korean company.
+There are 40 members in the company and this is not totally IT company.
+So I'm the only I'm and to my members are the only software developer and we try to create the digital transformation of all, all jobs now and this job is for the 40 employee but now I try to transform all these jobs.
+So this is kind of FDA job and I always try to create the Autonomous program for this job.
+So as a lead AIFD as you can see the Git repository from that FDE
+
+이기찬 06:05
+portfolio, you can see the system from the clients and developer and how to collaborate those people.
+So I recorded all meeting transcripts and I use Cloud AI as our co-worker.
+So we just validate and we just write the requirements from the clients.
+This is so new role for the software developer but it makes the great, great value for the company.
+
+Interviewer 06:48
+Yeah when you say company, which company are you talking about?
+Concentrics?
+
+이기찬 06:52
+Ah Kiba Kiba is in Korean
+
+Interviewer 06:57
+of business Analysis development.
+Okay okay okay okay good job okay yeah because you stopped working at Concentrixs I think two months ago.
+
+이기찬 07:08
+No the last year the last year.
+Yeah from start of August to the two months ago Yes.
+And I transferred to the new Korean company.
+
+Interviewer 07:20
+Okay good good and you've also worked on some startups yourself.
+
+이기찬 07:26
+Yeah Bit Habit but this is my own company co-founder.
+
+Interviewer 07:32
+Can you tell me more?
+
+이기찬 07:33
+Yes Bit Habit is a habit platform for users.
+I don't know if you know about the challenges Korean app I don't most Koreans know this app is a we create our own habit together like for example, drink water, drink water frequency and like that.
+In that case we have a problem.
+User can cheat easily because we are not in the same place so we use the application.
+So now I have, I create my own system.
+Bit Habit is just website but there is a camera button and when they click the camera, they
+
+이기찬 08:28
+record their studying situation for 20 minutes and with time left.
+So my website creates the GIF image and share the image to the group chat.
+So we know oh, user, our user is user really study in front of the phone.
+So I create my own system.
+So it's been two years business and over like I think 90% of retention and actually the member is not that much less than 20.
+But when we have a marketing strategy it will be
+
+이기찬 09:14
+much bigger. But we are as a software developer we don't have any even landing side but I always try to think about the user's the real problem and I try to solve the problem.
+
+Interviewer 09:31
+GA Okay good good good good let me share with you a bit more about cognition.
+Are you using Devin or do you know about Devin?
+
+이기찬 09:43
+So to speak I just know the devil from almost one year ago and Franklin speaking, I thought Davin is just a not real real agent.
+It means it's kind of this marketing strategy but now I saw that they got a lot of investment from the famous investors.
+So it means they have their own value.
+So I'm not sure about that but as an AI agent industry, they have unique value and I try to find out what's the unique for that.
+
+Interviewer 10:29
+Yeah yeah yeah yeah they do got a lot of funding.
+Yeah so so yeah they want to really compete and really be the tool for software developers and coders and the tool that really the enterprise client will use.
+So they are aggressively opening the whole APAC region.
+We've worked with them already open in Japan where we placed the CEO and CTO there and now we are working with them in Australia, Singapore, Korea, and India to open all these countries simultaneously.
+
+Interviewer 11:12
+I'm in charge of Korea. The first person that they need to put on the ground to respond to customers' demand is a deployed engineer right?
+So what we are looking for here is someone who can work with enterprise clients someone who has a combination of multiple skills, pre-sales solution, architecture, implementation and development, customer enablement and post-sales technical delivery.
+So we need someone
+
+Interviewer 11:48
+who built softwares, someone who implemented and customized them someone who worked directly with customers during deployments someone who built prototypes or proof of concept and someone who really owned the implementation projects right so ideally someone on top of that who has a strong entrepreneurial mindset someone who founded startups, launched something, being part of founding teams
+
+Interviewer 12:20
+and someone with a very strong customer mindset to understand customer problems recommend the right solution e Devin's business value and really translate the technical concept into business outcomes.
+
+이기찬 12:36
+Yes oh, oh, thank you for your explanation and, and you are talking about a lot of, a lot of jobs for as an FDE and in my case, as you can see in my portfolio side, I really like teaching.
+It's like a teaching it's like a translating because most clients don't know about the technical skill and even words.
+So we always think about their position and we need to persuade them like a,
+
+이기찬 13:18
+they know about the vibe coding.
+So they sometimes say that, oh I can make that in five minutes.
+But as a software developer, we always think about security and authentication and even we try to explain that authentication and authorization they usually don't know about the difference between them.
+So it means we always try to teach, teach them what we did when they didn't know our job they think that, oh, you are not that
+
+이기찬 13:55
+I think we can use AI without you like that.
+So we always teach them what we did and what should we did what should we do like that.
+So this is kind of customer and we can say that this is a requirement engineering.
+So this is the last part of engineering.
+
+Interviewer 14:18
+Good good yes. So what do you think about this role?
+Is that something that interests you or how do you feel about it?
+
+이기찬 14:26
+Very interesting especially to the like 40 or 50 ages Korean man Ajosi I'm so good at that.
+Nowadays they feel awkward in front of Jenji.
+They worried about the kind of like harassment situation because they are so different and I'm 1988 and I'm between them Jenji and Aduxi.
+So ADSI can feel me like, oh, we think the similar thing like we go to the military service together like and also I feel the Jenji's atmosphere.
+But AJSI usually say very strict
+
+이기찬 15:27
+and very short, very short.
+It means we need to have a follow-up question follow-up question to Ajsi but usually Jenji think that I know what he's trying to say.
+So and then so it means and they forgot the addresses short breathe so it has a, it has a it's like an alignment tire alignment.
+Jenji and Adsi has a different alignment so I always try to align what that she really wants to do for us.
+
+Interviewer 16:10
+Yeah fair enough all right good so yeah I'm happy to support you Kitan so then in that regard yes please share with me your resume as soon as you can.
+Yes. And I would like to cover a few questions together.
+Now first off about your salary details.
+What's your current package at KIB
+
+이기찬 16:34
+current package? What is the package
+
+Interviewer 16:37
+salary?
+
+이기찬 16:39
+I don't know how to say in English and I can say that
+
+Interviewer 16:45
+yeah the first two digits or you can
+
+이기찬 16:48
+ah 60 60. Yes
+
+Interviewer 16:51
+so that's okay. So zeros that's base salary yes okay
+
+이기찬 16:57
+a year yes a year Yes. Yeah.
+
+Interviewer 17:00
+Do you receive anything else like bonus or okay and how about AD concentrics?
+Was your salary similar
+
+이기찬 17:10
+similar but 40 because I work as a technical support engineer
+
+Interviewer 17:16
+Okay okay Okay good good good all right and a new salary How much do you want?
+
+이기찬 17:24
+AH 60 is okay to me 60. The same wage is okay to me.
+
+Interviewer 17:34
+Okay good good good. And if you leave your current company, what would be the reason for leaving?
+
+이기찬 17:47
+Yes here in Kiba I work only for one customer or like one company and just one project.
+It means I just focus on the very small project.
+It means I try to, I want more experience to make our, to understand our word and that company is only for just small Korean project.
+So I try to know bigger and wide world like in this situation in Seattle that's why I tried to move the software company as an FDE
+
+Interviewer 18:41
+GA. Okay okay okay good Gitana Send me your resume.
+I'll compile everything and if it can go forward then I'll let you.
+
+이기찬 18:52
+Okay thank you Thank you
+
+Interviewer 18:54
+Awesome Awesome Thank you for your time pleasure to talk.
+
+이기찬 18:57
+Okay thank you. Bye-bye All right you can see the Seano outside.
+
+Interviewer 19:02
+Oh it's such a nice weather here it's raining today.
+
+이기찬 19:05
+Ah raining. Okay oh thank you thank you.
+I hope you see you then. Yeah thank you.
+Bye Bye-bye.
+
+
+clovanote.naver.com
