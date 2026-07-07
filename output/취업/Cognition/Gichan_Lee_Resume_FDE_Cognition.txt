@@ -1,0 +1,26 @@
+Gichan Lee
+Forward Deployed Engineer — shipping AI agent systems from business intent to production
++82 10-6666-2824 | gichanlee@icloud.com | Gangnam-gu, Seoul, South Korea
+GitHub: github.com/bookseal | Portfolio: bit-habit.com | LinkedIn: linkedin.com/in/bookseal 
+
+	•	Current Lead AI FDE (AI Agent Lead): lead a 3-person team, translating executives' business needs into deployed technology and setting the development direction
+	•	AI agent systems in production: human-in-the-loop guardrails, meeting-notes → agent → GitHub pipeline
+	•	#1 in client communication & troubleshooting: ranked #1 on the team across all metrics (SRR 92.7%, 0% dissatisfaction) in MS M365 enterprise technical support
+
+Experience
+Korea Institute of Business Analysis (한국경영분석연구원) | Lead AI FDE	2026.05 - Present
+	•	3-Role Orchestration: Designed a collaboration loop connecting non-developer clients (intent), AI agents (execution), and verifying developers — agent work made clear enough for non-developers to drive, developer judgment encoded as explicit policy.
+	•	Human-in-the-Loop Guardrails: Agent actions branched by type — reads run automatically, board writes need per-item human approval, deletions/permissions/code changes are prohibited. Meeting notes kept private, PII masked before commits.
+	•	Claude Code + GitHub Pipeline: Asynchronous flow from meeting notes → AI agent → board (Issues/PRs). Migrated Plane → GitHub Projects on a build-vs-buy call.
+	•	Product from Planning to Deployment: Built 'Quali-fit', a certification-based staffing recommendation system scoring "who to assign, and why".
+Concentrix Korea | Technical Success Advisor	2025.08 – 2025.11
+	•	Achieved a 5.0 average rating, 0% dissatisfaction, and a 92.7% Service Request Resolution (SRR) rate among 20+ engineers (#1 across all metrics)
+FPT Software Korea | Embedded Software Developer	2024.09 – 2025.07
+	•	Deployed automotive security modules in partnership with Hyundai AutoEver
+Gamasot Online English | Founder & Operator	2018.05 – 2022.05
+	•	Founded and ran a video-call English education business for 4 years; built Unity-based learning games as the sole developer and iterated the product on direct user feedback
+
+Education
+	•	École 42 Seoul — Computer Science (2022.10 – 2024.10) 
+	•	UNIX systems, network programming, self-directed problem-solving projects
+	•	Pukyong National University — B.S. in Industrial Engineering (2007.03 – 2014.02)
