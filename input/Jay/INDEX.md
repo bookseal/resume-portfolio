@@ -1,6 +1,6 @@
 # Jay Kim 지식 인덱스
 
-> **사용법**: 취업/창업 관련 작업을 할 때 이 파일을 먼저 읽는다(AI에게도 이 파일부터 준다). 깊이가 필요하면 → knowledge/ 카드 → 주제별/ 원문 발췌 → raw/ 전사록 순으로 내려간다.
+> **사용법**: 취업/창업 관련 작업을 할 때 이 파일을 먼저 읽는다(AI에게도 이 파일부터 준다). 깊이가 필요하면 → knowledge/ 카드 → by-topic/ 원문 발췌 → raw/ 전사록 순으로 내려간다.
 > Jay Kim: LaserDefense CEO(대드론 레이저, Federal Way WA). 前 SharpArrow Medical 12년, MS Kinect, Google 로봇, 특허 35+. 매주 금 11시 정례 멘토링.
 > 태그: `[취업]` `[창업]` `[둘다]` | 카드: [[K1]]~[[K7]] (knowledge/)
 > 각 카드 말미에 **🤖 Claude의 의견(2026-07 웹 조사 기준)** — Jay 주장을 최신 데이터로 검증/보정하고 내 목표(Cognition→PnP→KSC→physical AI)에 적용한 해석. Jay의 말과 데이터가 갈리는 지점은 의견 섹션이 표시함.

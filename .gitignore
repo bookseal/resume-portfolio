@@ -12,3 +12,6 @@ output/portfolio-bithabit/
 input/portfolio/bithabit/
 input/portfolio/booktoss/
 input/portfolio/daily_seongsu/
+.DS_Store
+__pycache__/
+*.pyc

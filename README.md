@@ -4,9 +4,9 @@
 > 원자료(input)를 전략(Function_JD)이라는 함수에 통과시켜 산출물(output)을 만든다.
 
 ```
-                    ┌──▶ function/취업/ ──▶ output/취업/ (Cognition, Upstage)
+                    ┌──▶ function/job/ ──▶ output/job/ (Cognition, Upstage)
  input/  (공유 원자료)
-                    └──▶ function/창업/ ──▶ output/창업/ (Plug and Play, KSC)
+                    └──▶ function/startup/ ──▶ output/startup/ (Plug and Play, KSC)
 ```
 
 **두 파이프라인, 하나의 input.** 취업(이력서·자소서·면접)과 창업(피칭·트랙션)은 산출물이 다르지만 같은 원자료 — 내 경력·프로젝트·Jay 멘토링 지식 — 에서 나온다.
@@ -24,12 +24,13 @@
 | 경로 | 역할 |
 |---|---|
 | **`input/`** | **공유 원자료.** 경력 기록, 포트폴리오, 면접 전사록, 멘토링 지식. |
-| **`input/Jay/`** | **Jay Kim 지식 베이스.** `INDEX.md`(원칙 한줄 요약 — AI에게 먼저 줄 파일) → `knowledge/`(K1~K7 지식 카드) → `주제별/`(원문 발췌) → `raw/`(전사록 원본). `01_프로필`(Jay·본인 이력), `archived/`(과거 세션 준비 문서). |
+| **`input/제출이력.md`** | ★ **output → input 되먹임.** 어디에 무엇을 어떤 서사로 냈는지, 재사용 자산은 무엇인지. **새 이력서를 쓰기 전 이 파일부터 읽는다.** |
+| **`input/Jay/`** | **Jay Kim 지식 베이스.** `INDEX.md`(원칙 한줄 요약 — AI에게 먼저 줄 파일) → `knowledge/`(K1~K7 지식 카드) → `by-topic/`(원문 발췌) → `raw/`(전사록 원본). `01_profiles`(Jay·본인 이력), `archived/`(과거 세션 준비 문서). |
 | **`input/Interview_note/`** | 실제 면접·스크리닝 콜 전사록 (Cognition 등). |
-| **`function/취업/`** | 취업 변환 함수 — JD 분석, 포지셔닝 전략, 이력서/자소서/포트폴리오 작성 맥락. (구 Function_JD) |
-| **`function/창업/`** | 창업 변환 함수 — 피칭 전략, 프로젝트 선정 기준, 트랙션 서사 규칙. |
-| **`output/취업/`** | Cognition(FDE 이력서), Upstage(사전질문·이력서·자소서) 산출물. |
-| **`output/창업/`** | 피치덱, 원페이저, KSC 지원서 산출물. |
+| **`function/job/`** | 취업 변환 함수 — JD 분석, 포지셔닝 전략, 이력서/자소서/포트폴리오 작성 맥락. (구 Function_JD) |
+| **`function/startup/`** | 창업 변환 함수 — 피칭 전략, 프로젝트 선정 기준, 트랙션 서사 규칙. |
+| **`output/job/`** | 지원 산출물. **`submitted/YYYY-MM_회사_직무/`**(제출 완료 — 각 폴더에 `SUBMITTED.md`로 포지셔닝·재사용 포인트 기록) · **`drafts/`**(작성 중). |
+| **`output/startup/`** | 피치덱, 원페이저, KSC 지원서 산출물. |
 | **`viewer/`** | 로컬 문서 뷰어 웹앱. `뷰어시작.command` 더블클릭 → http://localhost:8765 (온톨로지 홈 + 안 본 문서 NEW 표시 + 실시간 갱신). |
 | **`backup_20260615_045443/`** | 초기 버전 스냅샷 (전략 전환 이전). 변화 추적용. |
 
