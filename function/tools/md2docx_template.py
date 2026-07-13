@@ -72,11 +72,13 @@ def _is_bullet(par):
 def sniff(doc):
     """템플릿에서 서식 매핑을 읽어낸다."""
     prof = {
-        "header": [],        # [(정렬, 크기)] — 이름, 헤드라인, 연락처…
-        "section": None,     # (스타일명, 크기)
-        "company": None,     # (스타일명, 크기)
-        "bullet": None,      # (스타일명, 크기)
+        "header": [],        # [(정렬, 크기)] — 이름/제목, 헤드라인, 연락처…
+        "section": None,     # (스타일명, 크기) — ## 섹션
+        "company": None,     # (스타일명, 크기) — ### 회사 | 직무  (탭으로 판별)
+        "subsection": None,  # (스타일명, 크기) — #### 프로젝트 제목 (탭 없는 두 번째 제목 층위)
+        "bullet": None,      # (스타일명, 크기) — - 항목
         "bullet_pPr": None,  # 글머리표+들여쓰기 XML (스타일만으론 글머리표가 안 나온다)
+        "body": None,        # (스타일명, 크기) — 산문 문단 (자기소개서)
     }
     seen_heading = False
 
@@ -97,14 +99,19 @@ def sniff(doc):
 
         if is_heading:
             seen_heading = True
-            has_tab = "\t" in par.text
-            key = "company" if has_tab else "section"
-            if prof[key] is None:
-                prof[key] = (style, _size(par))
+            if "\t" in par.text:                      # 탭 = 날짜를 우측으로 미는 회사 줄
+                if prof["company"] is None:
+                    prof["company"] = (style, _size(par))
+            elif prof["section"] is None:             # 탭 없는 첫 제목 = 섹션 (요약·경력·…)
+                prof["section"] = (style, _size(par))
+            elif style != prof["section"][0] and prof["subsection"] is None:
+                prof["subsection"] = (style, _size(par))   # 섹션과 다른 탭 없는 제목 = 프로젝트 제목
             continue
 
-        if not seen_heading:   # 첫 제목 이전 = 헤더 블록
-            prof["header"].append((par.alignment, _size(par)))
+        if not seen_heading:
+            prof["header"].append((par.alignment, _size(par)))   # 첫 제목 이전 = 헤더 블록
+        elif prof["body"] is None:
+            prof["body"] = (style, _size(par))                   # 제목 이후의 산문 문단
 
     # 표준서식은 이름이 Heading 이 아니라 가운데정렬 Normal 이다 → 헤더가 비면 폴백
     if not prof["header"]:
@@ -115,6 +122,11 @@ def sniff(doc):
         prof["company"] = ("Heading 2", None)
     if prof["bullet"] is None:
         prof["bullet"] = ("List Bullet", None)
+    if prof["subsection"] is None:
+        prof["subsection"] = prof["company"]   # 제목 층위가 2개뿐인 템플릿 → 회사 서식을 따른다
+    if prof["body"] is None:
+        # 이력서처럼 본문이 전부 불릿인 템플릿 → 산문도 불릿 서식을 따른다
+        prof["body"] = prof["bullet"]
     return prof
 
 
@@ -220,7 +232,13 @@ def convert(md_path: Path, out_path: Path, template: Path):
         if not s or s == "---" or s.startswith("<!--"):
             continue
 
-        if s.startswith("### "):
+        # '####' 를 '###' 보다 먼저 본다 — startswith("### ") 는 '#### ' 도 잡지 못하지만,
+        # 순서를 바꾸면 '#### X' 가 '# ' 계열 검사에 먼저 걸릴 수 있다.
+        if s.startswith("#### "):
+            style, size = prof["subsection"]
+            add_runs(doc.add_paragraph(style=style), strip_md(s[5:]), size)
+
+        elif s.startswith("### "):
             title = strip_md(s[4:])
             date = ""
             nxt = body[idx + 1].strip() if idx + 1 < len(body) else ""
@@ -237,8 +255,14 @@ def convert(md_path: Path, out_path: Path, template: Path):
         elif s.startswith("- "):
             add_bullet(doc, prof, strip_md(s[2:]))
 
-        else:
+        elif prof["body"] == prof["bullet"]:
+            # 이력서: 본문이 전부 불릿인 템플릿 — 산문 줄도 불릿으로 붙인다
             add_bullet(doc, prof, strip_md(s.lstrip("> ")))
+
+        else:
+            # 자기소개서: 산문 문단은 글머리표 없이 본문 스타일로
+            style, size = prof["body"]
+            add_runs(doc.add_paragraph(style=style), strip_md(s.lstrip("> ")), size)
 
     doc.save(out_path)
     return prof
