@@ -4,11 +4,12 @@
 
 | # | 제출 시각 | 회사 / 직무 | 결과 | 폴더 |
 |---|---|---|---|---|
-| 1 | 2026-07-05 21:44 | **Upstage** — DevRel · 교육 (인턴) | 면접 진행 중 | `2026-07_Upstage_DevRel/` |
-| 2 | 2026-07-05 22:02 | **Cognition** — Deployed Engineer, Korea (영문) | 스크리닝 통과 → 진행 중 | `2026-07_Cognition_FDE/` |
-| 3 | 2026-07-13 14:31 | **Upstage** — AI Solution Engineer (218421) | 대기 중 | `2026-07_Upstage_218421_AISolutionEngineer/` |
-| 4 | 2026-07-13 **17:06** | **LG U+** — DevOps / SRE (DAX팀) | 대기 중 · 2주 후 팔로업 | `2026-07_LGUplus_DAX_DevOpsSRE/` |
-| 5 | 2026-07-14 **15:03** | **Upstage** — AI Solution Engineer, Cloud (213515) | 대기 중 · **내부 추천인 있음** | `2026-07_Upstage_213515_SolutionEngineerCloud/` |
+| 1 | 2026-07-05 21:44 | **Upstage** — DevRel · 교육 (인턴) | 면접 진행 중 | `2026-07-05_Upstage_DevRel/` |
+| 2 | 2026-07-05 22:02 | **Cognition** — Deployed Engineer, Korea (영문) | 스크리닝 통과 → 진행 중 | `2026-07-05_Cognition_FDE/` |
+| 3 | 2026-07-13 14:31 | **Upstage** — AI Solution Engineer (218421) | 대기 중 | `2026-07-13_Upstage_218421_AISolutionEngineer/` |
+| 4 | 2026-07-13 **17:06** | **LG U+** — DevOps / SRE (DAX팀) | 대기 중 · 2주 후 팔로업 | `2026-07-13_LGUplus_DAX_DevOpsSRE/` |
+| 5 | 2026-07-14 **15:03** | **Upstage** — AI Solution Engineer, Cloud (213515) | 대기 중 · **내부 추천인 있음** | `2026-07-14_Upstage_213515_SolutionEngineerCloud/` |
+| 6 | 2026-07-14 **16:27** | **Upstage** — Applied AI Engineer, Agent GYM (194880) | 대기 중 · **코딩테스트 있음** | `2026-07-14_Upstage_194880_AgentGYM/` |
 
 > **제출 시각.** 1~3 번은 최종 산출물 생성 시각(정밀 기록 아님, 선후 관계용).
 > 4 번(LG U+)부터는 **실제 발송 시각**이다.
