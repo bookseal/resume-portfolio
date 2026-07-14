@@ -15,3 +15,7 @@ input/portfolio/daily_seongsu/
 .DS_Store
 __pycache__/
 *.pyc
+
+# Word 임시 잠금 파일
+~$*
+.DS_Store

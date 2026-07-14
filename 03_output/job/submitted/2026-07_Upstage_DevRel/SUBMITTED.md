@@ -20,7 +20,7 @@
 
 > 이 폴더의 `이력서_이기찬_Upstage_빌더_20260628_0000.docx` 가 **이 repo의 표준 이력서 서식**이다.
 > 워드에서 직접 다듬은 판(여백 좌우 1cm·상하 0.5cm, 이름 23pt, 섹션 17pt, 회사 13pt + 우측탭 날짜,
-> 불릿 12pt 리드인 굵게). 새 이력서는 `function/tools/md2docx_template.py` 가 이 파일을 템플릿으로 읽는다.
+> 불릿 12pt 리드인 굵게). 새 이력서는 `02_function/tools/md2docx_template.py` 가 이 파일을 템플릿으로 읽는다.
 
 ## 제출한 파일
 

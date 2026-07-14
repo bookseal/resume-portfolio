@@ -35,8 +35,10 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_TAB_ALIGNMENT
 from docx.oxml.ns import qn
 from docx.shared import Pt, Inches
 
-REPO = Path(__file__).resolve().parents[2]
-DEFAULT_TEMPLATE = REPO / "function/templates/이력서_표준서식.docx"
+# 스크립트 위치 기준으로 잡는다 — 상위 폴더 이름이 바뀌어도(function → 02_function) 안 깨진다.
+FUNCTION_DIR = Path(__file__).resolve().parents[1]
+DEFAULT_TEMPLATE = FUNCTION_DIR / "templates" / "이력서_표준서식.docx"
+COVERLETTER_TEMPLATE = FUNCTION_DIR / "templates" / "자기소개서_표준서식.docx"
 
 DATE_RE = re.compile(r"^\*\*(.+?)\*\*$")  # **2026.05 – 현재**
 
@@ -283,6 +285,11 @@ def main():
     md_path = Path(args[0])
     if not md_path.exists():
         sys.exit(f"입력 파일이 없습니다: {md_path}")
+
+    # --template 을 안 줬으면 파일명으로 고른다 (자기소개서는 서식이 다르다 — 여백이 넉넉하고 산문)
+    if "--template" not in sys.argv and "자기소개서" in md_path.name:
+        template = COVERLETTER_TEMPLATE
+
     if not template.exists():
         sys.exit(f"템플릿 docx 가 없습니다: {template}")
 

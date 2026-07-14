@@ -4,7 +4,7 @@
 |---|---|
 | **회사 / 직무** | Cognition — Deployed Engineer, Korea |
 | **제출 시각** | **2026-07-05 22:02** |
-| **결과** | 스크리닝 콜 통과 → 진행 중 (전사록: `input/Interview_note/260705 Cognition Screening Call.txt`) |
+| **결과** | 스크리닝 콜 통과 → 진행 중 (전사록: `01_input/Interview_note/260705 Cognition Screening Call.txt`) |
 | **언어** | 영문 |
 
 ### 타임스탬프
