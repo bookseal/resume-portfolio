@@ -6,7 +6,7 @@
 | **제출 시각** | **2026-07-13 17:06** |
 | **제출 경로** | `jupitersong47@gmail.com` — 팀 리더 직접 수신 (**형식 자유**, 공식 채용 페이지 없음) |
 | **결과** | 대기 중 |
-| **JD 원문** | `02_function/job/LGUplus_JD_DAX_DevOps_SRE.md` |
+| **JD 원문** | `02_function/LGUplus_JD_DAX_DevOps_SRE.md` |
 
 ## 제출한 파일
 

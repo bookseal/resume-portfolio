@@ -62,7 +62,7 @@
 - 마지막에 반드시 한 줄로 되감기: *"Build it, then teach it."* — 사람들이 기억하는 건 이 한 줄입니다.
 
 ## 사실관계 근거
-- 가마솥 화상영어 (2018~2022, 베트남 하노이, 약 4년) — `02_function/job/04_자산_인벤토리.md`
+- 가마솥 화상영어 (2018~2022, 베트남 하노이, 약 4년) — `02_function/04_자산_인벤토리.md`
 - Concentrix / MS M365 (2025.08~11), 팀 내 전 KPI 1위 (SRR 92.7%, DSAT 0%)
 - 한국경영분석연구원, Lead AI FDE (2026.05~현재), 3인 팀
 - Seoul APT Prediction — ML 10단계 로드맵 (seoul-apt.bit-habit.com)

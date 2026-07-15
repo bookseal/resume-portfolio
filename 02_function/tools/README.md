@@ -14,7 +14,7 @@
 
 ```bash
 # 이력서 — 표준 서식 적용 (기본 템플릿 자동 사용)
-python3 02_function/tools/md2docx_template.py 03_output/job/drafts/<회사>/이력서_....md
+python3 02_function/tools/md2docx_template.py 03_output/drafts/<회사>/이력서_....md
 
 # 다른 서식으로
 python3 02_function/tools/md2docx_template.py <입력.md> [출력.docx] --template <서식.docx>

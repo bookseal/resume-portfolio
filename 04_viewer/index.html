@@ -41,9 +41,9 @@
                      color: var(--muted); border-bottom: 1px solid var(--line); margin-bottom: 3px; }
   .group { margin-top: 6px; }
   .group > .gtitle { font-size: 11.5px; font-weight: 700; padding: 3px 8px; cursor: default; user-select: none; }
-  .lane-취업 .gtitle { color: var(--job); }
-  .lane-창업 .gtitle { color: var(--startup); }
-  .lane-공용 .gtitle { color: var(--shared); }
+  .col-input .gtitle { color: var(--shared); }
+  .col-function .gtitle { color: var(--job); }
+  .col-output .gtitle { color: var(--startup); }
   .file { display: block; padding: 5px 8px 5px 16px; border-radius: 7px; cursor: pointer;
           font-size: 13px; line-height: 1.35; color: var(--fg); text-decoration: none;
           overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -107,13 +107,9 @@
   .node .count .u { color: #16a34a; font-weight: 800; }
   .node .nfiles { display: flex; flex-direction: column; gap: 1px; }
   .node .nfiles .file { padding: 3px 6px; font-size: 12.5px; }
-  .node.lane-취업 { border-color: var(--job); background: var(--job-bg); }
-  .node.lane-창업 { border-color: var(--startup); background: var(--startup-bg); }
-  .node.lane-공용 { border-color: var(--shared); background: var(--shared-bg); }
-  .lane-label { font-size: 10px; font-weight: 800; border-radius: 5px; padding: 1px 6px; color: #fff; }
-  .lane-취업 .lane-label { background: var(--job); }
-  .lane-창업 .lane-label { background: var(--startup); }
-  .lane-공용 .lane-label { background: var(--shared); }
+  .node.col-input { border-color: var(--shared); background: var(--shared-bg); }
+  .node.col-function { border-color: var(--job); background: var(--job-bg); }
+  .node.col-output { border-color: var(--startup); background: var(--startup-bg); }
 </style>
 </head>
 <body>
@@ -135,29 +131,26 @@
 </div>
 
 <script>
-/* ===== 온톨로지 정의: input ─▶ function ─▶ output, 취업/창업 레인 ===== */
+/* ===== 온톨로지 정의: input ─▶ function ─▶ output ===== */
 const NODES = [
-  { id:'jay',    col:'input',    lane:'공용', title:'input/Jay — 지식 베이스',
+  { id:'jay',    col:'input',    title:'input/Jay — 지식 베이스',
     desc:'INDEX → 지식카드(K1~K7) → 주제별 발췌 → 전사록',
     match: p => p.startsWith('01_input/Jay/') },
-  { id:'inputs', col:'input',    lane:'공용', title:'input — 경력·프로젝트 원자료',
+  { id:'inputs', col:'input',    title:'input — 경력·프로젝트 원자료',
     desc:'경력, 포트폴리오, 면접 전사록, 질문',
     match: p => (p.startsWith('01_input/') && !p.startsWith('01_input/Jay/')) || !p.includes('/') },
-  { id:'fnjob',  col:'function', lane:'취업', title:'function/job — 지원 전략',
-    desc:'JD 분석 · 포지셔닝 · 이력서/자소서 작성 맥락',
-    match: p => p.startsWith('02_function/job/') },
-  { id:'fnst',   col:'function', lane:'창업', title:'function/startup — 피칭 전략',
-    desc:'Plug and Play · 트랙션 서사 · 프로젝트 선정',
-    match: p => p.startsWith('02_function/startup/') },
-  { id:'outjob', col:'output',   lane:'취업', title:'output/job — 지원 산출물',
-    desc:'Cognition · Upstage 이력서/자소서/답안',
-    match: p => p.startsWith('03_output/job/') },
-  { id:'outst',  col:'output',   lane:'창업', title:'output/startup — 피칭 산출물',
-    desc:'피치덱 · 원페이저 · KSC 지원서',
-    match: p => p.startsWith('03_output/startup/') },
-  { id:'outsh',  col:'output',   lane:'공용', title:'output — 포트폴리오 허브',
+  { id:'fn',     col:'function', title:'function — 지원 전략·도구',
+    desc:'JD 분석 · 포지셔닝 · 서식 템플릿 · md→docx 도구',
+    match: p => p.startsWith('02_function/') },
+  { id:'outdraft', col:'output', title:'output/drafts — 작성 중',
+    desc:'제출 전 초안',
+    match: p => p.startsWith('03_output/drafts/') },
+  { id:'outsub', col:'output',   title:'output/submitted — 제출 완료',
+    desc:'회사별 제출본 · SUBMITTED.md · INDEX',
+    match: p => p.startsWith('03_output/submitted/') },
+  { id:'outsh',  col:'output',   title:'output — 포트폴리오 허브',
     desc:'portfolio-bithabit 사이트',
-    match: p => p.startsWith('03_output/') && !p.startsWith('03_output/job/') && !p.startsWith('03_output/startup/') },
+    match: p => p.startsWith('03_output/') && !p.startsWith('03_output/drafts/') && !p.startsWith('03_output/submitted/') },
 ];
 const nodeOf = p => NODES.find(n => n.match(p));
 
@@ -198,8 +191,8 @@ function fileLink(f, showPath) {
 /* ===== 사이드바: 파이프라인 순서로 그룹 ===== */
 const STAGES = [
   { name: '📥 INPUT — 원자료·지식', ids: ['jay', 'inputs'] },
-  { name: '⚙️ FUNCTION — 변환 전략', ids: ['fnjob', 'fnst'] },
-  { name: '📤 OUTPUT — 산출물', ids: ['outjob', 'outst', 'outsh'] },
+  { name: '⚙️ FUNCTION — 변환 전략·도구', ids: ['fn'] },
+  { name: '📤 OUTPUT — 산출물', ids: ['outdraft', 'outsub', 'outsh'] },
 ];
 
 function renderTree(filter) {
@@ -235,8 +228,8 @@ function renderTree(filter) {
       if (!group.length) continue;
       any = true;
       const gdiv = document.createElement('div');
-      gdiv.className = 'group lane-' + node.lane;
-      gdiv.innerHTML = `<div class="gtitle">${node.lane !== '공용' ? node.lane + ' · ' : ''}${node.title.split(' — ')[0]}</div>`;
+      gdiv.className = 'group col-' + node.col;
+      gdiv.innerHTML = `<div class="gtitle">${node.title.split(' — ')[0]}</div>`;
       for (const f of group) gdiv.appendChild(fileLink(f, false));
       sdiv.appendChild(gdiv);
     }
@@ -249,9 +242,9 @@ function nodeCard(node) {
   const files = allFiles.filter(f => nodeOf(f.path) === node).sort((a, b) => b.mtime - a.mtime);
   const un = files.filter(f => unreadState(f)).length;
   const div = document.createElement('div');
-  div.className = 'node lane-' + node.lane;
+  div.className = 'node col-' + node.col;
   div.innerHTML =
-    `<div class="ntitle"><span>${node.lane !== '공용' ? `<span class="lane-label">${node.lane}</span> ` : ''}${node.title}</span>` +
+    `<div class="ntitle"><span>${node.title}</span>` +
     `<span class="count">${files.length}개${un ? ` · <span class="u">NEW ${un}</span>` : ''}</span></div>` +
     `<div class="ndesc">${node.desc}</div>`;
   const list = document.createElement('div');
