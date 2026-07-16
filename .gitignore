@@ -21,3 +21,7 @@ __pycache__/
 01_input/portfolio/bithabit/
 01_input/portfolio/booktoss/
 01_input/portfolio/daily_seongsu/
+
+# 대화 export (개인정보 포함 — 절대 커밋 금지)
+*-local-command-caveat*.txt
+2026-*-local-command-*.txt
