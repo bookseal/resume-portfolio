@@ -363,6 +363,41 @@ def main():
     print(f"생성: {out_path}")
     print(f"서식: {template.name}")
     print(f"  섹션={prof['section']}  회사={prof['company']}  불릿={prof['bullet']}")
+    report_fit(out_path)
+
+
+def report_fit(docx_path):
+    """생성된 docx 의 예상 줄 수와 1페이지 여부를 보고한다.
+
+    단락이 아니라 '줄'이 1페이지 예산이다(한글은 폭 2배로 가중). 이력서 서식(좌우 680,
+    9pt)에서 1페이지 ≈ 55줄. 넘치면 어느 불릿이 3줄인지까지 짚어 자를 곳을 알려준다.
+    """
+    d = Document(str(docx_path))
+    xml = d.sections[0]._sectPr.xml
+    page = re.search(r'w:w="([\d.]+)"', xml)
+    left = re.search(r'w:left="([\d.]+)"', xml)
+    right = re.search(r'w:right="([\d.]+)"', xml)
+    if not (page and left and right):
+        return
+    usable = (float(page.group(1)) - float(left.group(1)) - float(right.group(1))) / 1440.0
+    cpl = max(1, int(usable * 72 / 4.6))  # 9pt 한글 기준 줄당 대략 문자폭
+    total, fat = 0, []
+    for p in d.paragraphs:
+        t = p.text.strip()
+        if not t:
+            continue
+        w = sum(2 if ord(c) > 0x1100 else 1 for c in t)
+        n = max(1, -(-w // cpl))
+        total += n
+        if n >= 3:
+            fat.append((n, t[:40]))
+    budget = 55
+    verdict = "✅ 1페이지" if total <= budget else f"⚠️ {total - budget}줄 초과 — 2페이지 위험"
+    print(f"  분량: 약 {total}줄 (1페이지 예산 ≈ {budget}줄) {verdict}")
+    if total > budget and fat:
+        print("  ↓ 줄일 후보 (3줄 이상 불릿):")
+        for n, t in fat:
+            print(f"     {n}줄  {t}")
 
 
 if __name__ == "__main__":
