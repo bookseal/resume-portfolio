@@ -147,11 +147,23 @@ def usable_width_inches(doc):
 # ── 본문 생성 ──────────────────────────────────────────────────────
 
 def clear_body(doc):
-    """본문 단락을 모두 제거한다. sectPr(여백)은 body 의 마지막 자식이라 남긴다."""
+    """본문 단락을 모두 제거한다. sectPr(여백)은 body 의 마지막 자식이라 남긴다.
+
+    본문을 지워도 document.xml.rels 의 하이퍼링크 관계는 남는다(orphan). 그대로 두면
+    템플릿에 걸려 있던 옛 URL 이 결과 docx 에 유령처럼 따라다닌다 — 재빌드마다 쌓이고,
+    남의 템플릿을 재활용할 때 개인정보(옛 링크)가 새어나간다. 새 본문의 링크만 남기려면
+    본문을 비우는 이 시점에 외부 하이퍼링크 관계를 전부 떨어낸다.
+    """
     body = doc.element.body
     for child in list(body):
         if not child.tag.endswith("}sectPr"):
             body.remove(child)
+
+    HL = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink"
+    part = doc.part
+    for rid, rel in list(part.rels.items()):
+        if rel.reltype == HL:
+            del part.rels[rid]
 
 
 def strip_md(text):
