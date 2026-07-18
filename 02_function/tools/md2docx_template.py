@@ -32,6 +32,7 @@ from pathlib import Path
 
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_TAB_ALIGNMENT
+from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Pt, Inches
 
@@ -146,28 +147,103 @@ def usable_width_inches(doc):
 # ── 본문 생성 ──────────────────────────────────────────────────────
 
 def clear_body(doc):
-    """본문 단락을 모두 제거한다. sectPr(여백)은 body 의 마지막 자식이라 남긴다."""
+    """본문 단락을 모두 제거한다. sectPr(여백)은 body 의 마지막 자식이라 남긴다.
+
+    본문을 지워도 document.xml.rels 의 하이퍼링크 관계는 남는다(orphan). 그대로 두면
+    템플릿에 걸려 있던 옛 URL 이 결과 docx 에 유령처럼 따라다닌다 — 재빌드마다 쌓이고,
+    남의 템플릿을 재활용할 때 개인정보(옛 링크)가 새어나간다. 새 본문의 링크만 남기려면
+    본문을 비우는 이 시점에 외부 하이퍼링크 관계를 전부 떨어낸다.
+    """
     body = doc.element.body
     for child in list(body):
         if not child.tag.endswith("}sectPr"):
             body.remove(child)
 
+    HL = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink"
+    part = doc.part
+    for rid, rel in list(part.rels.items()):
+        if rel.reltype == HL:
+            del part.rels[rid]
+
 
 def strip_md(text):
-    text = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", text)     # [텍스트](url) → 텍스트
     text = re.sub(r"(?<!\*)\*([^*]+)\*(?!\*)", r"\1", text)  # *이탤릭* → 이탤릭 (굵게는 보존)
     return text.replace("`", "").strip()
 
 
+# 평문에서 하이퍼링크로 만들 URL 패턴. 마크다운 링크는 별도 처리.
+# 도메인.tld[/경로] 또는 http(s):// 로 시작하는 것. bit-habit.com·github.com/... 등을 잡는다.
+# (?<![@\w.]) 로 이메일 도메인(gichanlee@icloud.com 의 icloud.com)은 제외한다.
+_BARE_URL = re.compile(
+    r"(https?://[^\s)]+|(?<![@\w.])(?:[a-zA-Z0-9-]+\.)+(?:com|ai|io|dev|net|org|kr)(?:/[^\s)]*)?)"
+)
+
+
+def _hyperlink_run(par, text, url, size):
+    """<w:hyperlink> 엘리먼트를 만들어 par 에 붙인다 (python-docx 기본 미지원).
+
+    관계를 파트에 등록하고, 파란 밑줄 run 을 감싼 hyperlink 노드를 단락에 추가한다.
+    """
+    if not url.startswith(("http://", "https://")):
+        url = "https://" + url
+    part = par.part
+    r_id = part.relate_to(
+        url,
+        "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+        is_external=True,
+    )
+    link = OxmlElement("w:hyperlink")
+    link.set(qn("r:id"), r_id)
+    run = OxmlElement("w:r")
+    rPr = OxmlElement("w:rPr")
+    # Hyperlink 스타일(파랑+밑줄) — 스타일이 없을 수 있으니 색·밑줄을 직접 박는다
+    color = OxmlElement("w:color"); color.set(qn("w:val"), "0563C1"); rPr.append(color)
+    u = OxmlElement("w:u"); u.set(qn("w:val"), "single"); rPr.append(u)
+    if size:
+        sz = OxmlElement("w:sz"); sz.set(qn("w:val"), str(int(size * 2))); rPr.append(sz)
+    run.append(rPr)
+    t = OxmlElement("w:t"); t.set(qn("xml:space"), "preserve"); t.text = text
+    run.append(t)
+    link.append(run)
+    par._p.append(link)
+
+
 def add_runs(par, text, size):
-    """**굵게** 마크업을 run 으로 나눈다. size=None 이면 스타일 기본 크기를 따른다."""
+    """**굵게** 와 하이퍼링크(마크다운 링크·평문 URL)를 run 으로 나눈다."""
     for i, chunk in enumerate(text.split("**")):
         if not chunk:
             continue
-        run = par.add_run(chunk)
-        run.bold = i % 2 == 1
-        if size:
-            run.font.size = Pt(size)
+        bold = i % 2 == 1
+        _emit_with_links(par, chunk, size, bold)
+
+
+def _emit_with_links(par, text, size, bold):
+    """한 텍스트 조각을 링크와 일반 run 으로 쪼개 붙인다.
+
+    [라벨](url) → 라벨을 링크로 · 평문 URL → 그 자체를 링크로 · 나머지 → 일반 run.
+    """
+    pos = 0
+    # 마크다운 링크 우선 매칭, 없으면 평문 URL
+    pattern = re.compile(r"\[([^\]]+)\]\(([^)]+)\)|" + _BARE_URL.pattern)
+    for m in pattern.finditer(text):
+        if m.start() > pos:
+            _plain_run(par, text[pos:m.start()], size, bold)
+        if m.group(1) is not None:            # [라벨](url)
+            _hyperlink_run(par, m.group(1), m.group(2), size)
+        else:                                  # 평문 URL
+            _hyperlink_run(par, m.group(0), m.group(0), size)
+        pos = m.end()
+    if pos < len(text):
+        _plain_run(par, text[pos:], size, bold)
+
+
+def _plain_run(par, text, size, bold):
+    if not text:
+        return
+    run = par.add_run(text)
+    run.bold = bold
+    if size:
+        run.font.size = Pt(size)
 
 
 def add_bullet(doc, prof, text):
@@ -287,7 +363,7 @@ def main():
         sys.exit(f"입력 파일이 없습니다: {md_path}")
 
     # --template 을 안 줬으면 파일명으로 고른다 (자기소개서는 서식이 다르다 — 여백이 넉넉하고 산문)
-    if "--template" not in sys.argv and "자기소개서" in md_path.name:
+    if "--template" not in sys.argv and any(k in md_path.name.lower() for k in ("자기소개서", "cover")):
         template = COVERLETTER_TEMPLATE
 
     if not template.exists():
@@ -299,6 +375,41 @@ def main():
     print(f"생성: {out_path}")
     print(f"서식: {template.name}")
     print(f"  섹션={prof['section']}  회사={prof['company']}  불릿={prof['bullet']}")
+    report_fit(out_path)
+
+
+def report_fit(docx_path):
+    """생성된 docx 의 예상 줄 수와 1페이지 여부를 보고한다.
+
+    단락이 아니라 '줄'이 1페이지 예산이다(한글은 폭 2배로 가중). 이력서 서식(좌우 680,
+    9pt)에서 1페이지 ≈ 55줄. 넘치면 어느 불릿이 3줄인지까지 짚어 자를 곳을 알려준다.
+    """
+    d = Document(str(docx_path))
+    xml = d.sections[0]._sectPr.xml
+    page = re.search(r'w:w="([\d.]+)"', xml)
+    left = re.search(r'w:left="([\d.]+)"', xml)
+    right = re.search(r'w:right="([\d.]+)"', xml)
+    if not (page and left and right):
+        return
+    usable = (float(page.group(1)) - float(left.group(1)) - float(right.group(1))) / 1440.0
+    cpl = max(1, int(usable * 72 / 4.6))  # 9pt 한글 기준 줄당 대략 문자폭
+    total, fat = 0, []
+    for p in d.paragraphs:
+        t = p.text.strip()
+        if not t:
+            continue
+        w = sum(2 if ord(c) > 0x1100 else 1 for c in t)
+        n = max(1, -(-w // cpl))
+        total += n
+        if n >= 3:
+            fat.append((n, t[:40]))
+    budget = 55
+    verdict = "✅ 1페이지" if total <= budget else f"⚠️ {total - budget}줄 초과 — 2페이지 위험"
+    print(f"  분량: 약 {total}줄 (1페이지 예산 ≈ {budget}줄) {verdict}")
+    if total > budget and fat:
+        print("  ↓ 줄일 후보 (3줄 이상 불릿):")
+        for n, t in fat:
+            print(f"     {n}줄  {t}")
 
 
 if __name__ == "__main__":

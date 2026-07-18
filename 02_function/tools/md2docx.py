@@ -8,7 +8,7 @@ Google Docs 업로드 호환을 위해 표/텍스트박스/다단 없이 내장 
 
 사용법:
     python function/tools/md2docx.py <입력.md> [출력.docx]
-    python function/tools/md2docx.py output/job/LGUplus_DAX_DevOpsSRE/이력서_이기찬_LGUplus_DAX_20260713_1530.md
+    python function/tools/md2docx.py output/LGUplus_DAX_DevOpsSRE/이력서_이기찬_LGUplus_DAX_20260713_1530.md
 
 출력 경로를 생략하면 입력 md와 같은 폴더에 같은 이름의 .docx를 만든다.
 
