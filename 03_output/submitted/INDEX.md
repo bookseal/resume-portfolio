@@ -4,7 +4,7 @@
 
 | # | 제출 시각 | 회사 / 직무 | 결과 | 폴더 |
 |---|---|---|---|---|
-| 1 | 2026-07-05 21:44 | **Upstage** — DevRel · 교육 (인턴) | 면접 진행 중 | `2026-07-05_Upstage_DevRel/` |
+| 1 | 2026-07-05 21:44 | **Upstage** — DevRel · 교육 (인턴) | ❌ 면접 불합격 | `2026-07-05_Upstage_DevRel/` |
 | 2 | 2026-07-05 22:02 | **Cognition** — Deployed Engineer, Korea (영문) | 스크리닝 통과 → 진행 중 | `2026-07-05_Cognition_FDE/` |
 | 3 | 2026-07-13 14:31 | **Upstage** — AI Solution Engineer (218421) | 대기 중 | `2026-07-13_Upstage_218421_AISolutionEngineer/` |
 | 4 | 2026-07-13 **17:06** | **LG U+** — DevOps / SRE (DAX팀) | 대기 중 · 2주 후 팔로업 | `2026-07-13_LGUplus_DAX_DevOpsSRE/` |
