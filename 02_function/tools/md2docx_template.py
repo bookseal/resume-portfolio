@@ -363,7 +363,7 @@ def main():
         sys.exit(f"입력 파일이 없습니다: {md_path}")
 
     # --template 을 안 줬으면 파일명으로 고른다 (자기소개서는 서식이 다르다 — 여백이 넉넉하고 산문)
-    if "--template" not in sys.argv and "자기소개서" in md_path.name:
+    if "--template" not in sys.argv and any(k in md_path.name.lower() for k in ("자기소개서", "cover")):
         template = COVERLETTER_TEMPLATE
 
     if not template.exists():

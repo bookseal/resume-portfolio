@@ -56,9 +56,11 @@ Read these first:
 Career bullets are facts and reusable, but **the headline, summary, and skill ordering are
 a function of the company** — rewrite them.
 
-## 3. Write the resume md → `03_output/drafts/<id>/이력서_이기찬_<id>_<YYYYMMDD_HHMM>.md`
+## 3. Write the resume md → `03_output/drafts/<id>/GichanLee_Resume_<id>_<YYYYMMDD_HHMM>.md`
 
-The filename timestamp is the **creation time** (`date "+%Y%m%d_%H%M"`).
+**Output filenames are English, using "GichanLee"** — so foreign-company submissions need no renaming.
+`GichanLee_Resume_<id>_<timestamp>.md` and `GichanLee_CoverLetter_<id>_<timestamp>.md`.
+(The `_YYYYMMDD_HHMM` at the end is the **creation time**, `date "+%Y%m%d_%H%M"`.)
 
 **Rules (all of them):**
 - **Summary maps 1:1 to the JD's required skills.** The 3–4 summary bullets must line up
@@ -71,7 +73,7 @@ The filename timestamp is the **creation time** (`date "+%Y%m%d_%H%M"`).
 - **Check how each asset maps to THIS JD.** The same project gets a different emphasis per
   role (e.g. llm-app-lab reads as infra for SRE, an eval harness for an agent role, UI/UX for an internship).
 
-## 4. Write the cover letter md → same folder, `자기소개서_이기찬_<id>_<timestamp>.md`
+## 4. Write the cover letter md → same folder, `GichanLee_CoverLetter_<id>_<timestamp>.md`
 
 - **Sections 1–3 (what you did) can be reused from a recent letter. Sections 4–5 (why THIS
   company) are rewritten from scratch.**
@@ -93,8 +95,8 @@ The filename timestamp is the **creation time** (`date "+%Y%m%d_%H%M"`).
 ## 6. Build the docx (go all the way here)
 
 ```bash
-python3 02_function/tools/md2docx_template.py 03_output/drafts/<id>/이력서_….md
-python3 02_function/tools/md2docx_template.py 03_output/drafts/<id>/자기소개서_….md
+python3 02_function/tools/md2docx_template.py 03_output/drafts/<id>/GichanLee_Resume_….md
+python3 02_function/tools/md2docx_template.py 03_output/drafts/<id>/GichanLee_CoverLetter_….md
 ```
 
 - Template, hyperlinks, and formatting are **automatic** (a filename containing "자기소개서"
