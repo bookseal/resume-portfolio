@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Upstage 206525 기술 인터뷰 준비 — Full-Stack Product Engineer 인턴</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: "neutral", flowchart: { curve: "basis" } });</script>
+<style>
+  :root {
+    --ink:#1a1f24; --muted:#5b6570; --line:#e4e8ec; --bg:#fbfcfd; --card:#fff;
+    --accent:#2d6cdf; --accent-bg:#eef4ff; --good:#0a7d4d; --good-bg:#e7f6ee;
+    --warn:#b5620a; --warn-bg:#fdf1e3; --jd:#7a3ea0; --jd-bg:#f4ecfb;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+    font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR",sans-serif; }
+  .wrap { max-width: 900px; margin:0 auto; padding: 0 22px 120px; }
+  header.hero { padding: 44px 0 20px; border-bottom:2px solid var(--line); }
+  h1 { font-size:1.8rem; margin:6px 0 8px; letter-spacing:-.02em; }
+  .sub { color:var(--muted); font-size:1.02rem; }
+  h2 { font-size:1.35rem; margin:52px 0 6px; padding-top:10px; letter-spacing:-.01em; }
+  h2 .n { color:var(--accent); font-variant-numeric:tabular-nums; }
+  h3 { font-size:1.08rem; margin:26px 0 8px; }
+  p { margin:10px 0; }
+  a { color:var(--accent); text-decoration:none; } a:hover { text-decoration:underline; }
+  .lead { font-size:1.08rem; }
+  .tag { display:inline-block; font-size:.72rem; font-weight:800; letter-spacing:.04em;
+    padding:2px 9px; border-radius:999px; vertical-align:middle; }
+  .tag.jd { color:var(--jd); background:var(--jd-bg); }
+  .tag.me { color:var(--good); background:var(--good-bg); }
+  .tag.us { color:var(--accent); background:var(--accent-bg); }
+  blockquote { margin:14px 0; padding:12px 16px; border-left:4px solid var(--line);
+    background:var(--card); border-radius:0 8px 8px 0; color:#37414a; }
+  blockquote.src { border-left-color:var(--muted); font-size:.96rem; white-space:pre-wrap; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:16px 18px; margin:14px 0; }
+  .callout { border-radius:10px; padding:13px 16px; margin:14px 0; font-size:.98rem; }
+  .callout.us { background:var(--accent-bg); border:1px solid #cfe0ff; }
+  .callout.me { background:var(--good-bg); border:1px solid #bfe6cf; }
+  .callout.warn { background:var(--warn-bg); border:1px solid #f0d6b0; }
+  .callout .lbl { font-weight:800; font-size:.8rem; letter-spacing:.03em; display:block; margin-bottom:3px; }
+  .callout.us .lbl { color:var(--accent); } .callout.me .lbl { color:var(--good); } .callout.warn .lbl { color:var(--warn); }
+  .mermaid { background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:16px; margin:18px 0; text-align:center; overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:.95rem; margin:14px 0; display:block; overflow-x:auto; }
+  th,td { text-align:left; padding:9px 11px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--muted); font-weight:700; font-size:.85rem; }
+  code { background:#eef1f5; padding:1px 6px; border-radius:5px; font-size:.9em; }
+  .phrase { border-left:4px solid var(--jd); background:var(--jd-bg); padding:8px 14px;
+    margin:20px 0 8px; border-radius:0 8px 8px 0; font-weight:700; }
+  .toc { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 20px; margin:22px 0; }
+  .toc a { display:inline-block; margin:3px 14px 3px 0; font-size:.95rem; }
+  footer { margin-top:60px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:.9rem; }
+  hr { border:none; border-top:1px dashed var(--line); margin:30px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="sub">Upstage · 공고 206525 · 기술 인터뷰 준비</div>
+  <h1>Full-Stack Product Engineer 인턴 (체험형)</h1>
+  <div class="sub">서류 통과 → <b>기술 인터뷰(2:1, 60분)</b> · 이 문서는 "이 일이 뭔지"를 문장 단위로 이해하고,
+  내가 이미 만든 것과 연결하기 위한 것.</div>
+</header>
+
+<div class="toc">
+  <b>목차</b><br>
+  <a href="#email">① 합격 메일</a>
+  <a href="#jd">② JD 원문</a>
+  <a href="#what">③ 이 일이 뭔가 (FDE와 비교)</a>
+  <a href="#map">④ 팀의 3대 문제 ↔ 내 프로젝트</a>
+  <a href="#lens">⑤ JD 문장별 해설 (미국 문화 렌즈)</a>
+  <a href="#interview">⑥ 인터뷰 대비</a>
+  <a href="#story">⑦ 나의 한 줄 스토리</a>
+</div>
+
+<!-- ============ 1. EMAIL ============ -->
+<h2 id="email"><span class="n">①</span> 합격 메일 <span class="tag us">source</span></h2>
+<blockquote class="src">안녕하세요 이기찬님!
+
+귀한 시간 내어 업스테이지의 체험형 인턴십 선발전형에 참여해주셔서 감사드리며,
+지원서 심사절차에서 좋은 피드백을 받으셔서 다음 전형을 진행하고자 합니다 :)
+
+기술 인터뷰는 두분의 인터뷰어와 2:1로 최대 60분 내외로 진행될 예정입니다.
+질의응답 과정에서 지원서에 기재해주신 실무경험, 경력과 관련된 기술적인 질의응답 외에
+필요시 라이브 코딩 혹은 시스템 디자인 등의 테스트가 진행될 수 있습니다.
+원활한 인터뷰 진행을 위해, 인터뷰에 참여하시기 전에 평소 사용하시는 개발 환경과
+개발 도구를 사전에 준비해주시기 바랍니다. 자주 활용하시는 AI 도구가 있다면
+해당 도구도 함께 준비해주시면 감사하겠습니다.</blockquote>
+
+<div class="callout us"><span class="lbl">이 메일이 실제로 말하는 것</span>
+"지원서에 쓴 걸 <b>직접 보여줄 준비를 하라</b>." — 라이브 코딩 = 진짜 코드를 짜는 모습을,
+시스템 디자인 = 아키텍처를 말로 설계하는 능력을, "자주 쓰는 AI 도구" = <b>Claude Code·Codex로 개발하는 실제 워크플로우</b>를 본다는 뜻.
+이건 서구 테크 인터뷰의 표준 시그널이다 — 이력서의 주장을 <b>실연(demonstration)</b>으로 검증한다.</div>
+
+<!-- ============ 2. JD ============ -->
+<h2 id="jd"><span class="n">②</span> JD 원문 <span class="tag jd">job description</span></h2>
+<blockquote class="src">[업스테이지는] AI 기술을 "진짜 제품"으로 숨쉬게 만들 분을 찾습니다.
+복잡한 AI 파이프라인을 코드 한 줄 몰라도 드래그 앤 드롭으로 설계할 수 있는 세상,
+Agent 들이 편하게 가져다 쓸 수 있는 고성능의 스킬 — 사용자 경험의 정점을 찍는
+인터페이스와 워크플로우를 함께 설계할 인턴 엔지니어.
+
+우리 팀은 이런 문제를 풀고 있습니다
+- 수천 건의 계약서에서 핵심 정보를 최고의 정확도로 추출하는 워크플로우 빌더
+- Human-in-the-loop와 자동 평가를 결합해, 최소한의 고객 입력으로 품질이 빠르게 오르는 피드백 루프
+- AI가 분석한 복잡한 추출 결과와 추론 과정을 모니터링하는 직관적인 대시보드
+
+주요 업무
+- AI 서비스 UI/UX 고도화 · 데이터 기반 기능 개발(모니터링 대시보드·시각화)
+- Cross-Functional: 모델 연구팀(최신 기술)·미국 팀(글로벌 시장)과 협업
+
+자격 요건: TypeScript/Python + 웹 서비스 · AI 도구로 10x · 작은 기능도 끝까지 완성
+우대: Next.js 풀스택 배포 · AI/ML·RAG · 데이터 시각화 · 영어</blockquote>
+
+<!-- ============ 3. WHAT IS THIS ============ -->
+<h2 id="what"><span class="n">③</span> 이 일이 뭔가 — FDE와 뭐가 다른가</h2>
+<p class="lead">한 문장으로: <b>"AI가 계약서에서 뽑은 정보를, 사람이 믿고 쓸 수 있게 만드는 프론트엔드 중심 제품 엔지니어."</b>
+FDE처럼 보이지만 방향이 반대다.</p>
+
+<div class="mermaid">
+flowchart LR
+  subgraph FDE["FDE (Cognition · Reflection)"]
+    direction TB
+    F1["고객사로 나감"] --> F2["그 고객 문제에<br/>맞춰 배포"] --> F3["전달하고 끝"]
+  end
+  subgraph INT["이 인턴 (Upstage 206525)"]
+    direction TB
+    I1["한 제품 안에서"] --> I2["모든 고객이 쓸<br/>UI·워크플로우"] --> I3["만들고 다듬음"]
+  end
+  FDE -. "밖으로 · 고객별 맞춤 · 배포가 끝" .-> OUT[ ]
+  INT -. "안에서 · 제품 하나 · UI/UX가 끝" .-> OUT
+  style OUT fill:none,stroke:none
+</div>
+
+<div class="callout me"><span class="lbl">기찬님 직감 채점</span>
+"출장 안 감" ✅ · "다같이 계약서 에이전트를 만든다" ✅ (팀의 1번 문제가 바로 그것) ·
+"미국 진출 위해" △ (미국팀 협업은 세 축 중 하나일 뿐, 주력은 <b>제품 자체</b>) ·
+"FDE 같다" △ (표면만. FDE는 <b>밖에서 배포</b>, 이건 <b>안에서 UI를 빚는</b> 일)</div>
+
+<p>그래서 자격요건이 k8s·인프라가 아니라 <b>TypeScript·웹·Next.js·데이터 시각화</b>다.
+계약서 추출(Document AI)은 Upstage의 실제 상용 제품이고, 미국팀과 붙는다는 건
+이게 <b>글로벌 매출 제품</b>이라는 뜻 — "체험형"이라고 장난감이 아니다.</p>
+
+<!-- ============ 4. MAPPING ============ -->
+<h2 id="map"><span class="n">④</span> 팀의 3대 문제 ↔ 내가 이미 만든 것</h2>
+<p>핵심: <b>나는 이 팀이 푸는 세 문제의 아날로그를 전부 만들어봤다.</b> 인터뷰에서 이 연결을 명확히 말하는 게 최대 무기.</p>
+
+<div class="mermaid">
+flowchart TB
+  subgraph P["Upstage 팀의 3대 문제"]
+    direction TB
+    P1["① 계약서 정보 추출<br/>워크플로우 빌더"]
+    P2["② Human-in-the-loop<br/>+ 자동 평가 루프"]
+    P3["③ 추론 결과<br/>신뢰 대시보드"]
+  end
+  subgraph M["내가 만든 것"]
+    direction TB
+    K수문["KIBA_수문<br/>정부 PDF·엑셀 → 추출<br/>원본 셀 citation"]
+    RAG["llm-app-lab RAG<br/>45-config eval 하네스"]
+    PM["pm_with_ai_agent<br/>모든 변경 사람 승인"]
+    QF["quali-fit<br/>이유와 함께 추천"]
+  end
+  P1 --- K수문
+  P1 --- RAG
+  P2 --- PM
+  P2 --- RAG
+  P3 --- K수문
+  P3 --- QF
+</div>
+
+<h3>① 계약서 정보 추출 워크플로우 → <span class="tag me">KIBA_수문 · RAG</span></h3>
+<div class="card">
+  <b>KIBA_수문</b>: 정부 지침 PDF 5개 + 엑셀 8개에서 예산·원가 정보를 추출·정제해 Streamlit 앱으로.
+  <b>모든 숫자에 "원본 파일·시트·셀" 단위 citation</b>이 붙는다 (validation-first). 원본 엑셀 뷰어로 직접 대조까지.
+  <br>→ 이게 정확히 <b>"수천 건 계약서에서 정보 추출 + 최고 정확도"</b> 문제의 구조다. 문서 → 구조화 → 검증.
+  <br><br>
+  <b>llm-app-lab RAG</b>: 항공법 1,297쪽에서 §인용과 함께 답을 뽑는 RAG. 문서에서 정확한 정보를 뽑아내는 파이프라인 그 자체.
+</div>
+
+<h3>② Human-in-the-loop + 자동 평가 → <span class="tag me">pm_with_ai_agent · eval 하네스</span></h3>
+<div class="card">
+  <b>project_management_with_ai_agent</b>: 회의록 → AI 에이전트가 GitHub 보드 변경을 <b>제안</b>하되,
+  <b>"당신이 확인하기 전엔 아무것도 쓰지 않는다."</b> 읽기는 자동, 쓰기는 항목별 사람 승인, 삭제·권한·코드는 금지.
+  → 이게 <b>"Human-in-the-loop"</b>의 교과서적 구현.
+  <br><br>
+  <b>RAG eval 하네스</b>: 45개 설정을 blind 홀드아웃에 자동 채점(coverage/recall/MRR), §인용 실재 여부까지 프로그램 검증.
+  → 이게 <b>"자동 평가(auto-eval)"</b>. 사람 입력 최소로 품질을 재는 장치.
+</div>
+
+<h3>③ 추론 결과 신뢰 대시보드 → <span class="tag me">KIBA_수문 · quali-fit</span></h3>
+<div class="card">
+  <b>KIBA_수문</b>의 citation-first가 여기도 걸린다 — AI/데이터가 낸 숫자를 <b>"어디서 나왔는지 원본으로 되짚을 수 있게"</b> 만든 것.
+  이게 신뢰 대시보드의 본질(provenance).
+  <br><br>
+  <b>quali-fit</b>: "누구를, <b>왜</b> 투입하는가"를 이유와 함께 점수로 보여주는 사내 웹 도구. 도메인 로직을 UI·DB에서 분리, 단위 테스트로 고정.
+  → AI/알고리즘 결과를 <b>비전문가가 신뢰하고 판단</b>하게 만드는 UI. 정확히 이 팀의 3번 문제.
+</div>
+
+<!-- ============ 5. US LENS ============ -->
+<h2 id="lens"><span class="n">⑤</span> JD 문장별 해설 — 미국/선진 엔지니어링 문화 렌즈</h2>
+<p>Upstage는 미국식 AI 엔지니어링 문화(evals·신뢰성·high agency)를 따라간다. JD의 각 문구를 그 렌즈로 풀면,
+"왜 이 문장을 썼는지"가 보이고 내 경험이 어디에 꽂히는지 명확해진다.</p>
+
+<div class="phrase">"AI 기술을 '진짜 제품'으로 숨쉬게 만들 분"</div>
+<p><span class="tag us">US 문화</span> 미국 AI 업계의 핵심 구분: <b>research demo vs production product</b>. 모델이 되는 것과
+사람이 매일 쓰는 제품이 되는 것은 다르다. "숨쉬게(breathe)"는 살아서 운영된다는 뜻.
+<br><span class="tag me">내 경험</span> 나는 BookToss·quali-fit·KIBA 에이전트를 <b>데모가 아니라 2년째 운영되는 것</b>으로 만들었다.
+"데모에서 멈춘 것과 살아있는 것 사이의 거리를 걸어봤다"가 내 문장.</p>
+
+<div class="phrase">"코드 한 줄 몰라도 드래그 앤 드롭으로 AI 파이프라인 설계"</div>
+<p><span class="tag us">US 문화</span> <b>abstraction for non-experts</b> — 복잡한 걸 비전문가가 다루게 만드는 것이 미국 제품 문화의 최고 가치(Figma, Zapier, Retool 계보).
+"코드 없이"는 곧 <b>사용자 층을 개발자 밖으로 넓힌다</b>는 뜻.
+<br><span class="tag me">내 경험</span> KIBA에서 <b>"비전공자 팀원이 나 없이도 워크플로우를 돌릴 수 있게"</b> 문서화·온보딩한 것이 정확히 이 가치.
+자동화가 나에게만 의존하면 그건 병목이라는 관점.</p>
+
+<div class="phrase">"수천 건의 계약서에서 핵심 정보를 최고의 정확도로 추출"</div>
+<p><span class="tag us">US 문화</span> 엔터프라이즈 AI의 핵심 난제 = <b>accuracy at scale + trust</b>. 계약서는 틀리면 법적/금전적 비용이 크다.
+그래서 "최고의 정확도"는 곧 <b>측정·검증 체계</b>를 요구한다.
+<br><span class="tag me">내 경험</span> KIBA_수문의 <b>셀 단위 citation(validation-first)</b> + RAG의 <b>§인용 실재 여부 프로그램 검증</b>.
+나는 이미 "추출한 값이 맞는지 원본으로 되짚는" 시스템을 만들었다.</p>
+
+<div class="phrase">"Human-in-the-loop와 자동 평가를 결합"</div>
+<p><span class="tag us">US 문화</span> 안전하게 AI를 배포하는 표준 패턴 두 개. <b>HITL</b> = 사람이 승인/교정,
+<b>evals</b> = 감이 아니라 지표로 품질 측정. Anthropic·OpenAI가 밀어붙이는 "evals over vibes" 문화.
+<br><span class="tag me">내 경험</span> HITL은 <b>pm_with_ai_agent</b>(쓰기 전 사람 승인, 삭제 금지), auto-eval은 <b>RAG 45-config 하네스</b>.
+둘을 각각 실제로 만들어봤다 — 이 문장은 내 두 프로젝트를 합친 것과 같다.</p>
+
+<div class="phrase">"AI가 분석한 추론 과정을 모니터링하는 직관적인 대시보드"</div>
+<p><span class="tag us">US 문화</span> <b>observability / provenance</b> — "이 답을 믿어도 되나?"에 답하는 UI.
+결과만이 아니라 <b>근거·과정</b>을 보여줘 사용자가 스스로 신뢰 수준을 판단하게 한다.
+<br><span class="tag me">내 경험</span> quali-fit의 "이유와 함께 추천", KIBA_수문의 원본 대조 뷰어.
+사전질문 답안에도 <b>"확신도 미표현을 UI 문제로 재해석"</b>이라 썼다 — 이 팀의 3번 문제를 이미 그 각도로 봤다.</p>
+
+<div class="phrase">"AI 도구를 실무에 적극 활용해 10x로 개발 효율을 높일 분"</div>
+<p><span class="tag us">US 문화</span> 2025~2026 미국 테크의 최신 규범: <b>AI-native development</b>. Claude Code/Cursor로 개발 속도를 몇 배로.
+"쓸 줄 안다"가 아니라 "이걸로 일하는 방식이 바뀌었나"를 본다.
+<br><span class="tag me">내 경험</span> <b>현직에서 Claude Code·Codex를 개발 프로세스 자체에 이식</b> — 이슈→PR→리뷰 자동화, 지침서 검토 10h→2h.
+이건 나의 최강 카드. 메일이 "AI 도구 준비"를 요청한 이유이기도 하다.</p>
+
+<div class="phrase">"작은 기능 하나라도 끝까지 책임지고 완성 · high agency · 플레이북이 아직 쓰이는 환경"</div>
+<p><span class="tag us">US 문화</span> 스타트업의 <b>ownership / high agency</b> — 시키는 걸 하는 게 아니라 문제를 발굴하고 끝까지 끈다.
+"플레이북이 아직 쓰이는 중"은 <b>정답이 없는 환경에서 스스로 길을 낸다</b>는 뜻.
+<br><span class="tag me">내 경험</span> 나는 기획→개발→배포→운영을 <b>혼자 완주</b>한 서비스가 14개. 창업 경험(4년)까지.
+"혼자 다 해봤다"가 이 환경에 대한 증거.</p>
+
+<div class="phrase">"Cross-Functional: 모델 연구팀 · 미국 팀과 협업"</div>
+<p><span class="tag us">US 문화</span> <b>research ↔ product bridge</b>, 그리고 <b>글로벌 협업(영어·비동기)</b>.
+미국 팀과 붙는다는 건 이 제품이 글로벌 매출을 노린다는 뜻이고, 영어 커뮤니케이션이 실무다.
+<br><span class="tag me">내 경험</span> MS M365 글로벌 지원 20명 중 1위(영어로 진단·문서화), 12시간 시차(시애틀) 비동기 협업 체계 설계.
+영어·글로벌·비동기는 이미 내 실무 이력.</p>
+
+<!-- ============ 6. INTERVIEW ============ -->
+<h2 id="interview"><span class="n">⑥</span> 인터뷰 대비 — 예상과 준비</h2>
+
+<h3>나올 방향 (자격요건 역산)</h3>
+<table>
+  <tr><th>영역</th><th>예상 질문/테스트</th><th>내 준비</th></tr>
+  <tr><td><b>TypeScript / 웹 / Next.js</b></td><td>라이브 코딩이 프론트면 여기. 상대적 <b>약점</b>(백엔드·인프라가 강점)</td><td>Codecademy 3~4일 집중. 인터뷰 전까지 최소한 컴포넌트·상태·fetch·라우팅은 손에.</td></tr>
+  <tr><td><b>AI 도구로 10x</b> ⭐</td><td>"AI 도구 어떻게 쓰나" — 실제 시연 요청 가능</td><td>Claude Code로 실제 개발 흐름 준비. 이슈→PR→리뷰 자동화 사례를 말+시연으로.</td></tr>
+  <tr><td><b>데이터 시각화</b></td><td>"복잡한 걸 어떻게 보여줬나"</td><td>viz/seoul-apt(선형대수·ML 시각화), KIBA_수문 citation 뷰어를 예시로.</td></tr>
+  <tr><td><b>시스템 디자인</b></td><td>"계약서 추출 서비스를 설계해보라" 류</td><td>아래 다이어그램대로: 문서→추출→<b>HITL 교정</b>→<b>eval</b>→대시보드. 내 3프로젝트 언어로 설명.</td></tr>
+  <tr><td><b>실무경험 심화</b></td><td>지원서의 KIBA·llm-app-lab을 깊이 판다</td><td>수치 암기: RAG 45-config, coverage 0.86 vs 0.41, 재랭킹 15,482→2,256, 지침서 10h→2h.</td></tr>
+</table>
+
+<h3>시스템 디자인이 나오면 — "계약서 추출 서비스" 기본 골격</h3>
+<div class="mermaid">
+flowchart LR
+  U["고객: 계약서 업로드"] --> EX["추출 (Document AI/LLM)<br/>structured output"]
+  EX --> DASH["대시보드<br/>결과 + 근거(citation)"]
+  DASH --> HITL["사람 검토·교정<br/>(Human-in-the-loop)"]
+  HITL --> FB["피드백 저장"]
+  FB --> EVAL["자동 평가<br/>정확도 지표"]
+  EVAL -.개선.-> EX
+  HITL -.승인된 것만.-> OUT["확정 데이터"]
+</div>
+<div class="callout us"><span class="lbl">이 그림의 힘</span>
+이 루프의 각 박스가 내 프로젝트다 — 추출=수문/RAG, 대시보드=수문/quali-fit, HITL=pm_agent, eval=RAG하네스.
+시스템 디자인 질문에 <b>"제가 이 루프의 조각들을 각각 만들어봤습니다"</b>라고 답하면 강력하다.</div>
+
+<h3>사전 준비물 (메일 요청)</h3>
+<div class="callout warn"><span class="lbl">체크리스트</span>
+□ 평소 개발 환경 (에디터·터미널·git 세팅) 열어둘 것 &nbsp;
+□ <b>Claude Code / Codex</b> 바로 시연 가능하게 &nbsp;
+□ 회신: 다음 주 가능 일정 &nbsp;
+□ 라이브 코딩 대비 TS/Next.js 최소 손감각 &nbsp;
+□ 영어 자기소개 1분 (글로벌 팀)</div>
+
+<h3>약점을 먼저 말하는 법 (정직 프레임)</h3>
+<div class="callout me"><span class="lbl">프론트엔드 깊이가 상대적으로 얕다면</span>
+숨기지 말고: <b>"제 강점은 백엔드·AI 파이프라인·인프라입니다. 프론트는 지금 집중해서 채우는 중이고,
+AI 도구로 학습·구현 속도를 끌어올리는 게 제 방식입니다."</b>
+→ 오버스펙 방어 때와 같은 논리. 약점을 먼저 꺼내면 "자기 수준을 아는 사람"이 된다.</div>
+
+<!-- ============ 7. STORY ============ -->
+<h2 id="story"><span class="n">⑦</span> 나의 한 줄 스토리</h2>
+<div class="card lead">
+"저는 AI가 낸 결과를 <b>사람이 믿고 쓸 수 있게 만드는 일</b>을 이미 해왔습니다.
+정부 문서에서 예산을 추출하며 모든 숫자에 원본 citation을 붙였고(수문),
+에이전트가 보드를 바꾸기 전 사람이 승인하게 했고(pm_agent),
+RAG를 45개 설정으로 측정해 감이 아니라 지표로 배포본을 골랐습니다(eval 하네스).
+Upstage 팀이 푸는 세 문제 — 추출·HITL/eval·신뢰 대시보드 — 를
+저는 각각 다른 프로젝트로 만들어봤습니다. 이제 그걸 <b>하나의 제품 UI</b>로 합치는 일을 하고 싶습니다."
+</div>
+
+<footer>
+  Upstage 206525 기술 인터뷰 준비 · 로컬 문서 (비공개) · mermaid 다이어그램은 인터넷 연결 시 렌더링됨.
+</footer>
+
+</div>
+</body>
+</html>
