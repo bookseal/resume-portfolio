@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>#5 Auth 백엔드 · paste-jd 튜토리얼</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="bar">
+    <span class="brand">paste<span class="dot">·</span>jd 튜토리얼</span>
+    <nav>
+      <a href="index.html">← 보드</a>
+      <a href="#db">DB</a>
+      <a href="#helpers">헬퍼</a>
+      <a href="#routes">라우트</a>
+      <a href="#test">테스트</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero">
+    <span class="issue-badge">Issue #5</span>
+    <span class="eyebrow" style="margin-left:8px">Milestone 2 · Auth</span>
+    <h1>Auth 백엔드 — 매직링크</h1>
+    <p class="lede">physical-spark의 passwordless 매직링크 인증을 TypeScript로 이식합니다.
+    SQLite 스키마 + <code>/api/auth/start</code>(링크 발송) + <code>/api/auth/verify</code>(세션 발급).
+    dev에선 링크를 콘솔에 출력합니다.</p>
+  </section>
+
+  <div class="meta-grid">
+    <div class="meta-card"><h4>배우는 것</h4>
+      <p>Route Handler(<code>route.ts</code>) · <code>node:crypto</code> · better-sqlite3 · 쿠키 설정 · 302 리다이렉트</p></div>
+    <div class="meta-card"><h4>완료 기준</h4>
+      <p><code>start</code>가 콘솔에 링크를 찍고, 그 링크를 열면 <code>pr_session</code> 쿠키가 발급된다.</p></div>
+  </div>
+
+  <div class="code term"><div class="filename">터미널 · 이슈 + 브랜치</div><pre><code>gh issue create --title "#5 Auth 백엔드 (매직링크)" --project "paste-jd SaaS" \
+  --body "SQLite 스키마 + /api/auth/start,/verify. physical-spark 패턴 이식."
+git switch main &amp;&amp; git pull &amp;&amp; git switch -c feat/5-auth-backend</code></pre></div>
+
+  <h2 id="db">1. SQLite 설치 &amp; 스키마</h2>
+  <div class="code term"><div class="filename">터미널 · web/</div><pre><code>cd web
+npm install better-sqlite3
+npm install -D @types/better-sqlite3
+echo "data/" &gt;&gt; .gitignore</code></pre></div>
+  <div class="callout note"><span class="tag">next.config 설정</span>
+    <p>better-sqlite3는 네이티브 모듈이라 번들링에서 제외해야 합니다. <code>next.config.ts</code>에
+    <code>serverExternalPackages: ["better-sqlite3"]</code>를 추가하세요.</p></div>
+  <div class="code"><div class="filename">web/next.config.ts<span class="lang">typescript</span></div><pre><code>import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  serverExternalPackages: ["better-sqlite3"],
+};
+
+export default nextConfig;</code></pre></div>
+
+  <div class="code"><div class="filename">web/src/lib/db.ts<span class="lang">typescript</span></div><pre><code>import Database from "better-sqlite3";
+import path from "node:path";
+import fs from "node:fs";
+
+const DB_PATH = process.env.PASTE_JD_DB || path.join(process.cwd(), "data", "paste-jd.db");
+fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
+
+// Next dev는 핫리로드마다 모듈을 재실행한다.
+// globalThis에 캐싱해 연결이 한 번만 열리도록 한다(= "database is locked" 방지).
+const g = globalThis as unknown as { _pasteDb?: Database.Database };
+export const db = g._pasteDb ?? new Database(DB_PATH);
+g._pasteDb = db;
+
+db.pragma("journal_mode = WAL");
+
+// physical-spark와 동일한 스키마. 타임스탬프는 정수 Unix초.
+db.exec(`
+  CREATE TABLE IF NOT EXISTS users(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT UNIQUE NOT NULL,
+    nickname TEXT UNIQUE NOT NULL,
+    created_at INTEGER NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS login_tokens(
+    token_hash TEXT PRIMARY KEY,
+    email TEXT NOT NULL,
+    expires_at INTEGER NOT NULL,
+    used INTEGER NOT NULL DEFAULT 0,
+    created_at INTEGER NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS sessions(
+    id TEXT PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    expires_at INTEGER NOT NULL
+  );
+`);</code></pre></div>
+
+  <h2 id="helpers">2. 토큰 / 세션 / 닉네임 헬퍼</h2>
+  <div class="code"><div class="filename">web/src/lib/auth.ts<span class="lang">typescript</span></div><pre><code>import crypto from "node:crypto";
+
+export const TOKEN_TTL = 15 * 60;          // 매직링크 15분
+export const SESSION_TTL = 30 * 24 * 3600; // 세션 30일
+export const RESEND_COOLDOWN = 30;         // 이메일당 30초
+export const COOKIE_NAME = "pr_session";
+
+export const now = () =&gt; Math.floor(Date.now() / 1000);
+
+// 256-bit CSPRNG. 토큰과 세션 id 모두 이걸로 생성.
+export const newToken = () =&gt; crypto.randomBytes(32).toString("base64url");
+
+// 저장은 항상 해시만. 원문 토큰은 이메일 링크에만 존재.
+export const sha256 = (s: string) =&gt;
+  crypto.createHash("sha256").update(s).digest("hex");</code></pre></div>
+
+  <div class="code"><div class="filename">web/src/lib/nicknames.ts<span class="lang">typescript</span></div><pre><code>import crypto from "node:crypto";
+
+const ADJECTIVES = ["brave","calm","clever","bold","bright","swift","keen","lucky",
+  "mellow","nimble","quiet","sunny","witty","zesty","cosmic","royal","amber","coral",
+  "jade","noble","rapid","spry","vivid","wild","gentle","merry","plucky","snappy",
+  "cheery","dandy"];
+const NOUNS = ["otter","falcon","maple","comet","pixel","robot","gecko","koala","lynx",
+  "puffin","quokka","tapir","walrus","yak","zebra","badger","cactus","dynamo","ember",
+  "ferry","gizmo","harbor","island","jetpack","kettle","lantern","meteor","nugget",
+  "orbit","piston"];
+
+const pick = &lt;T,&gt;(a: T[]) =&gt; a[crypto.randomInt(a.length)];
+
+// adjective-noun-NN (30 × 30 × 100 = 90,000). 중복이면 다시 뽑는다(rejection sampling).
+export function generateNickname(taken: (n: string) =&gt; boolean): string {
+  for (;;) {
+    const n = `${pick(ADJECTIVES)}-${pick(NOUNS)}-${String(crypto.randomInt(100)).padStart(2, "0")}`;
+    if (!taken(n)) return n;
+  }
+}</code></pre></div>
+
+  <div class="code"><div class="filename">web/src/lib/email.ts<span class="lang">typescript</span></div><pre><code>// dev: SMTP 미설정 시 콘솔에 링크 출력(physical-spark과 동일한 개발 흐름).
+// 배포에서 실제 발송은 나중에 SMTP secret으로 확장.
+export function sendMagicLink(to: string, link: string) {
+  if (!process.env.SMTP_HOST) {
+    console.log(`\n[DEV EMAIL] to=${to} :: 로그인 링크:\n${link}\n`);
+    return;
+  }
+  // TODO: nodemailer 등으로 실제 발송 (배포 시)
+  console.log(`[EMAIL] would send to ${to}`);
+}</code></pre></div>
+
+  <h2 id="routes">3. Route Handlers</h2>
+  <div class="callout why"><span class="tag">Why <code>/api/auth/*</code> 같은 origin</span>
+    <p>auth API를 사이트와 <b>같은 도메인</b>에 두면 쿠키가 first-party가 되어 CORS·<code>SameSite=None</code>이
+    필요 없습니다. physical-spark이 "가장 중요한 아키텍처 결정"이라 부른 부분 — Next.js에선
+    <code>app/api/auth/*</code>에 두기만 하면 자동으로 지켜집니다.</p></div>
+
+  <div class="code term"><div class="filename">터미널 · web/</div><pre><code>mkdir -p src/app/api/auth/start src/app/api/auth/verify</code></pre></div>
+
+  <div class="code"><div class="filename">web/src/app/api/auth/start/route.ts<span class="lang">typescript</span></div><pre><code>import { NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { now, newToken, sha256, TOKEN_TTL, RESEND_COOLDOWN } from "@/lib/auth";
+import { sendMagicLink } from "@/lib/email";
+
+export async function POST(req: Request) {
+  const body = await req.json().catch(() =&gt; ({}));
+  const email = String(body.email || "").toLowerCase().trim();
+
+  // 계정 존재 여부를 노출하지 않도록 응답은 항상 동일.
+  const ok = NextResponse.json({ ok: true, message: "Check your email for a sign-in link." });
+  if (!email || !email.includes("@")) return ok;
+
+  // 이메일당 30초 쿨다운
+  const recent = db
+    .prepare("SELECT created_at FROM login_tokens WHERE email=? ORDER BY created_at DESC LIMIT 1")
+    .get(email) as { created_at: number } | undefined;
+  if (recent &amp;&amp; now() - recent.created_at &lt; RESEND_COOLDOWN) return ok;
+
+  const token = newToken();
+  db.prepare(
+    "INSERT INTO login_tokens(token_hash, email, expires_at, used, created_at) VALUES(?,?,?,0,?)"
+  ).run(sha256(token), email, now() + TOKEN_TTL, now());
+
+  const link = `${new URL(req.url).origin}/api/auth/verify?token=${token}`;
+  sendMagicLink(email, link);
+  return ok;
+}</code></pre></div>
+
+  <div class="code"><div class="filename">web/src/app/api/auth/verify/route.ts<span class="lang">typescript</span></div><pre><code>import { NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { now, sha256, newToken, SESSION_TTL, COOKIE_NAME } from "@/lib/auth";
+import { generateNickname } from "@/lib/nicknames";
+
+export async function GET(req: Request) {
+  const token = new URL(req.url).searchParams.get("token") || "";
+  const hash = sha256(token);
+
+  const row = db
+    .prepare("SELECT email, expires_at, used FROM login_tokens WHERE token_hash=?")
+    .get(hash) as { email: string; expires_at: number; used: number } | undefined;
+
+  if (!row || row.used || row.expires_at &lt; now()) {
+    return NextResponse.json(
+      { error: "This sign-in link is invalid or has expired." },
+      { status: 400 }
+    );
+  }
+
+  // 단회용: 즉시 소각
+  db.prepare("UPDATE login_tokens SET used=1 WHERE token_hash=?").run(hash);
+
+  // find-or-create (로그인=회원가입 한 경로)
+  let user = db.prepare("SELECT id FROM users WHERE email=?").get(row.email) as
+    | { id: number }
+    | undefined;
+  if (!user) {
+    const nick = generateNickname((n) =&gt; !!db.prepare("SELECT 1 FROM users WHERE nickname=?").get(n));
+    const info = db
+      .prepare("INSERT INTO users(email, nickname, created_at) VALUES(?,?,?)")
+      .run(row.email, nick, now());
+    user = { id: Number(info.lastInsertRowid) };
+  }
+
+  // 서버측 세션 발급
+  const sid = newToken();
+  db.prepare("INSERT INTO sessions(id, user_id, expires_at) VALUES(?,?,?)").run(
+    sid,
+    user.id,
+    now() + SESSION_TTL
+  );
+
+  const res = NextResponse.redirect(new URL("/?welcome=1", req.url), 302);
+  res.cookies.set(COOKIE_NAME, sid, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production", // localhost(http)에선 false여야 저장됨
+    sameSite: "lax",
+    domain: process.env.PASTE_JD_COOKIE_DOMAIN || undefined, // 배포 시 .bit-habit.com
+    path: "/",
+    maxAge: SESSION_TTL,
+  });
+  return res;
+}</code></pre></div>
+  <div class="callout learn"><span class="tag">dev vs 배포 쿠키 차이</span>
+    <p>로컬은 <code>http</code>라 <code>secure:true</code>면 브라우저가 쿠키를 버립니다 → <code>NODE_ENV</code>로 분기.
+    <code>Domain</code>도 로컬에선 설정하지 않아 host-only(localhost)로 동작하고, 배포에선
+    <code>PASTE_JD_COOKIE_DOMAIN=.bit-habit.com</code>을 줍니다(#8/#9).</p></div>
+
+  <h2 id="test">4. 브라우저 없이 백엔드만 테스트</h2>
+  <p>UI는 #6에서 만듭니다. 지금은 <code>curl</code>로 검증합니다.</p>
+  <div class="code term"><div class="filename">터미널 · (dev 서버 켠 채로) 새 터미널</div><pre><code>curl -X POST http://localhost:3000/api/auth/start \
+  -H "Content-Type: application/json" \
+  -d '{"email":"gichanlee@icloud.com"}'</code></pre></div>
+  <p>그러면 <b>dev 서버를 띄운 터미널</b>에 <code>[DEV EMAIL] ... 로그인 링크:</code>와 URL이 찍힙니다.
+  그 URL을 복사해 브라우저 주소창에 붙여넣으면 <code>/?welcome=1</code>로 리다이렉트되고,
+  개발자도구 → Application → Cookies에 <code>pr_session</code>이 생깁니다.</p>
+  <div class="callout note"><span class="tag">직접 확인</span>
+    <p>같은 토큰 링크를 <b>두 번째</b> 열면 400(“invalid or has expired”)이 나야 정상입니다 — 단회용 검증.</p></div>
+
+  <div class="callout learn"><span class="tag">🧩 Your turn</span>
+    <p>만료를 눈으로 확인해 보세요. <code>auth.ts</code>의 <code>TOKEN_TTL</code>을 잠깐 <code>10</code>(=10초)으로 바꾸고
+    링크를 받은 뒤 15초 기다렸다 열면 400이 나야 합니다. 확인 후 원래 <code>15 * 60</code>으로 되돌리세요.</p></div>
+
+  <h2>5. 커밋 &amp; PR</h2>
+  <div class="code term"><div class="filename">터미널</div><pre><code>cd .. &amp;&amp; git add web
+git commit -m "feat: magic-link auth backend (start/verify) (#5)"
+git push -u origin feat/5-auth-backend
+gh pr create --base main --title "feat: auth backend (#5)" --body "Closes #5"</code></pre></div>
+
+  <ul class="check">
+    <li><code>data/paste-jd.db</code>가 생기고 <code>data/</code>는 git 무시된다</li>
+    <li><code>start</code>가 콘솔에 링크를 찍는다</li>
+    <li>링크를 열면 <code>pr_session</code> 쿠키 발급 · 재사용 시 400</li>
+    <li>PR merge (카드 → Done)</li>
+  </ul>
+
+  <div class="pager">
+    <a href="04-dashboard.html"><span>이전</span><b>← #4 Dashboard</b></a>
+    <a class="next" href="06-auth-ui.html"><span>다음</span><b>#6 Auth UI →</b></a>
+  </div>
+
+</div>
+<script src="copy.js"></script>
+</body>
+</html>

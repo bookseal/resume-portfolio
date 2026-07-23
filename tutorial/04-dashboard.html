@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>#4 Dashboard 뷰어 · paste-jd 튜토리얼</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="bar">
+    <span class="brand">paste<span class="dot">·</span>jd 튜토리얼</span>
+    <nav>
+      <a href="index.html">← 보드</a>
+      <a href="#assets">예시 파일</a>
+      <a href="#data">문서 데이터</a>
+      <a href="#dynamic">동적 라우트</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero">
+    <span class="issue-badge">Issue #4</span>
+    <span class="eyebrow" style="margin-left:8px">Milestone 1 · Foundations</span>
+    <h1>Dashboard 뷰어 (John Doe)</h1>
+    <p class="lede">파이프라인 산출물을 보는 대시보드. 문서 목록 → 상세 뷰(마크다운 렌더 +
+    <code>.docx</code> 다운로드 + fit report). 동적 라우트와 <code>public/</code> 서빙을 배웁니다.</p>
+  </section>
+
+  <div class="meta-grid">
+    <div class="meta-card"><h4>배우는 것</h4>
+      <p>동적 라우트 <code>[doc]</code> · <code>await params</code> · <code>public/</code> 정적 서빙 ·
+      서버에서 파일 읽기(fs) · 다운로드 링크</p></div>
+    <div class="meta-card"><h4>완료 기준</h4>
+      <p><code>/dashboard</code>에 문서 카드, <code>/dashboard/resume</code>에 렌더 + 다운로드 + fit report.</p></div>
+  </div>
+
+  <div class="code term"><div class="filename">터미널 · 이슈 + 브랜치</div><pre><code>gh issue create --title "#4 Dashboard 뷰어" --project "paste-jd SaaS" \
+  --body "문서 목록/상세, md 렌더 + docx 다운로드 + fit report. 동적 라우트 학습."
+git switch main &amp;&amp; git pull &amp;&amp; git switch -c feat/4-dashboard</code></pre></div>
+
+  <h2 id="assets">1. John Doe 예시 파일을 public/으로 복사</h2>
+  <p><code>public/</code> 안의 파일은 <code>/파일명</code> URL로 그대로 제공됩니다(빌드 불필요).
+  저장소 루트의 예시들을 복사합니다.</p>
+  <div class="code term"><div class="filename">터미널 · 저장소 루트</div><pre><code>mkdir -p web/public/examples
+cp examples/resume_johndoe.md        web/public/examples/
+cp examples/coverletter_johndoe.md   web/public/examples/
+cp examples/resume_johndoe.docx      web/public/examples/
+cp examples/coverletter_johndoe.docx web/public/examples/</code></pre></div>
+  <div class="callout note"><span class="tag">확인</span>
+    <p>dev 서버가 떠 있으면 <a href="http://localhost:3000/examples/resume_johndoe.docx" target="_blank">localhost:3000/examples/resume_johndoe.docx</a>
+    로 바로 다운로드가 되는지 확인해 보세요. 이게 <code>public/</code>의 힘입니다.</p></div>
+
+  <h2 id="data">2. 문서 메타데이터 (fit report 포함)</h2>
+  <p>어떤 문서들이 있는지, 각 <code>.docx</code> 경로와 <b>미리 계산된 fit report</b>를 데이터로 둡니다.</p>
+  <div class="code"><div class="filename">web/src/lib/documents.ts<span class="lang">typescript</span></div><pre><code>export type FitReport = { lines: number; budget: number; ok: boolean; fat: string[] };
+
+export type Doc = {
+  slug: "resume" | "coverletter";
+  title: string;
+  mdFile: string;     // public/examples 아래 파일명
+  docxFile: string;
+  fit: FitReport;     // 배포본은 mock (실제 계산은 #10에서 Python 연결)
+};
+
+export const DOCS: Doc[] = [
+  {
+    slug: "resume",
+    title: "Resume — John Doe",
+    mdFile: "resume_johndoe.md",
+    docxFile: "resume_johndoe.docx",
+    fit: { lines: 52, budget: 55, ok: true, fat: [] },
+  },
+  {
+    slug: "coverletter",
+    title: "Cover Letter — John Doe",
+    mdFile: "coverletter_johndoe.md",
+    docxFile: "coverletter_johndoe.docx",
+    fit: { lines: 34, budget: 55, ok: true, fat: [] },
+  },
+];
+
+export const getDoc = (slug: string) => DOCS.find((d) => d.slug === slug);</code></pre></div>
+
+  <h2 id="list">3. 문서 목록 페이지</h2>
+  <div class="code term"><div class="filename">터미널 · web/</div><pre><code>mkdir -p src/app/dashboard</code></pre></div>
+  <div class="code"><div class="filename">web/src/app/dashboard/page.tsx<span class="lang">tsx</span></div><pre><code>import Link from "next/link";
+import { DOCS } from "@/lib/documents";
+
+export default function Dashboard() {
+  return (
+    &lt;main className="mx-auto max-w-3xl px-6 py-16"&gt;
+      &lt;h1 className="text-3xl font-bold"&gt;Dashboard&lt;/h1&gt;
+      &lt;p className="mt-2 text-neutral-600 dark:text-neutral-300"&gt;
+        생성된 산출물 (데모: John Doe)
+      &lt;/p&gt;
+      &lt;div className="mt-8 grid gap-4 sm:grid-cols-2"&gt;
+        {DOCS.map((doc) =&gt; (
+          &lt;Link key={doc.slug} href={`/dashboard/${doc.slug}`}
+            className="rounded-xl border border-black/10 bg-white p-5 hover:border-teal-500
+                       dark:border-white/10 dark:bg-neutral-900"&gt;
+            &lt;h2 className="font-semibold"&gt;{doc.title}&lt;/h2&gt;
+            &lt;p className="mt-1 text-sm text-neutral-500"&gt;
+              {doc.fit.ok ? "✓ 한 페이지" : "⚠ 초과"} · {doc.fit.lines}/{doc.fit.budget}줄
+            &lt;/p&gt;
+          &lt;/Link&gt;
+        ))}
+      &lt;/div&gt;
+    &lt;/main&gt;
+  );
+}</code></pre></div>
+  <div class="callout learn"><span class="tag">백틱 경로 주의</span>
+    <p><code>href={`/dashboard/${doc.slug}`}</code> — JSX 속성 안에서 JS를 쓰려면 <code>{ }</code>,
+    그 안에서 문자열 조합은 백틱 템플릿 리터럴을 씁니다. <code>"/dashboard/" + doc.slug</code>도 같습니다.</p></div>
+
+  <h2 id="dynamic">4. 동적 상세 라우트 <code>[doc]</code></h2>
+  <p>대괄호 폴더 <code>[doc]</code>는 <b>어떤 값이든 받는 경로</b>입니다.
+  <code>/dashboard/resume</code> → <code>params.doc = "resume"</code>.</p>
+  <div class="code term"><div class="filename">터미널 · web/</div><pre><code>mkdir -p "src/app/dashboard/[doc]"</code></pre></div>
+  <div class="code"><div class="filename">web/src/app/dashboard/[doc]/page.tsx<span class="lang">tsx</span></div><pre><code>import fs from "node:fs";
+import path from "node:path";
+import { notFound } from "next/navigation";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { getDoc } from "@/lib/documents";
+
+// Next 15: params 는 Promise → 반드시 await
+export default async function DocPage(
+  { params }: { params: Promise&lt;{ doc: string }&gt; }
+) {
+  const { doc } = await params;
+  const meta = getDoc(doc);
+  if (!meta) notFound();
+
+  // public/examples 아래 md 파일을 서버에서 읽는다
+  const mdPath = path.join(process.cwd(), "public", "examples", meta.mdFile);
+  const md = fs.readFileSync(mdPath, "utf8");
+
+  return (
+    &lt;main className="mx-auto max-w-3xl px-6 py-16"&gt;
+      &lt;div className="flex items-center justify-between"&gt;
+        &lt;h1 className="text-2xl font-bold"&gt;{meta.title}&lt;/h1&gt;
+        &lt;a href={`/examples/${meta.docxFile}`} download
+           className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white
+                      hover:bg-teal-700"&gt;
+          .docx 다운로드
+        &lt;/a&gt;
+      &lt;/div&gt;
+
+      {/* fit report */}
+      &lt;div className={`mt-4 rounded-lg border p-3 text-sm ${
+        meta.fit.ok ? "border-green-500/40 bg-green-500/10"
+                    : "border-amber-500/40 bg-amber-500/10"}`}&gt;
+        {meta.fit.ok ? "✓ 한 페이지에 맞음" : "⚠ 한 페이지 초과"} —{" "}
+        {meta.fit.lines}/{meta.fit.budget}줄
+      &lt;/div&gt;
+
+      &lt;article className="cookbook mt-8"&gt;
+        &lt;Markdown remarkPlugins={[remarkGfm]}&gt;{md}&lt;/Markdown&gt;
+      &lt;/article&gt;
+    &lt;/main&gt;
+  );
+}</code></pre></div>
+  <div class="callout why"><span class="tag">Why <code>notFound()</code></span>
+    <p><code>/dashboard/asdf</code>처럼 없는 문서로 오면 <code>notFound()</code>가 표준 404 페이지를 띄웁니다.
+    잘못된 입력을 <b>명시적으로</b> 처리하는 습관 — 나중에 실데이터에서 더 중요해집니다.</p></div>
+
+  <div class="callout warn"><span class="tag">배포 미리보기</span>
+    <p><code>fs.readFileSync(...public/examples...)</code>는 dev에선 완벽히 되지만, standalone 빌드에선
+    <code>public/</code>이 자동으로 안 딸려갑니다. #8 Dockerfile에서 <code>public/</code>을 복사해 이 문제를 해결합니다.
+    지금은 dev에서 되면 OK.</p></div>
+
+  <div class="callout learn"><span class="tag">🧩 Your turn</span>
+    <p><code>[doc]</code> 페이지 하단에 “다른 문서로 이동” 링크 목록을 추가해 보세요.
+    <code>DOCS</code>를 <code>.map()</code>으로 돌려 현재 문서가 아닌 것만 링크로. (<code>filter</code> + <code>map</code> 조합 연습)</p></div>
+
+  <h2>5. 확인 &amp; PR</h2>
+  <div class="code term"><div class="filename">터미널</div><pre><code>npm run dev    # /dashboard, /dashboard/resume 확인
+cd .. &amp;&amp; git add web
+git commit -m "feat: dashboard viewer with md render + docx download (#4)"
+git push -u origin feat/4-dashboard
+gh pr create --base main --title "feat: dashboard viewer (#4)" --body "Closes #4"</code></pre></div>
+
+  <ul class="check">
+    <li><code>/dashboard</code> 문서 카드 → 클릭 시 상세로 이동</li>
+    <li>상세에서 마크다운이 렌더되고 <code>.docx</code>가 다운로드된다</li>
+    <li>fit report 배지가 보인다</li>
+    <li>PR merge (카드 → Done). <b>Milestone 1 완료!</b></li>
+  </ul>
+
+  <div class="pager">
+    <a href="03-cookbook.html"><span>이전</span><b>← #3 Cookbook</b></a>
+    <a class="next" href="05-auth-backend.html"><span>다음</span><b>#5 Auth 백엔드 →</b></a>
+  </div>
+
+</div>
+<script src="copy.js"></script>
+</body>
+</html>

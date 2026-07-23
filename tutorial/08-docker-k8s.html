@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>#8 Docker + k8s · paste-jd 튜토리얼</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="bar">
+    <span class="brand">paste<span class="dot">·</span>jd 튜토리얼</span>
+    <nav>
+      <a href="index.html">← 보드</a>
+      <a href="#standalone">standalone</a>
+      <a href="#dockerfile">Dockerfile</a>
+      <a href="#k8s">k8s</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero">
+    <span class="issue-badge">Issue #8</span>
+    <span class="eyebrow" style="margin-left:8px">Milestone 3 · Deploy</span>
+    <h1>Docker + Kubernetes 매니페스트</h1>
+    <p class="lede">Next.js를 standalone 컨테이너 이미지로 빌드하고, physical-spark과 동일한
+    패턴의 Deployment / Service / Ingress를 작성합니다. 아직 배포는 안 하고 준비만 (#9에서 배포).</p>
+  </section>
+
+  <div class="meta-grid">
+    <div class="meta-card"><h4>배우는 것</h4>
+      <p>멀티스테이지 Docker · standalone output · 네이티브 모듈 빌드 · k8s Deployment/Service/Ingress · hostPath</p></div>
+    <div class="meta-card"><h4>완료 기준</h4>
+      <p>로컬에서 <code>docker build</code> 성공, 컨테이너가 3000 포트로 뜬다. k8s YAML 3종 준비.</p></div>
+  </div>
+
+  <div class="code term"><div class="filename">터미널 · 이슈 + 브랜치</div><pre><code>gh issue create --title "#8 Docker + k8s 매니페스트" --project "paste-jd SaaS" \
+  --body "standalone Dockerfile + Deployment/Service/Ingress (paste-jd.bit-habit.com)."
+git switch main &amp;&amp; git pull &amp;&amp; git switch -c feat/8-docker-k8s</code></pre></div>
+
+  <h2 id="standalone">1. standalone 출력 + health 엔드포인트</h2>
+  <div class="code"><div class="filename">web/next.config.ts<span class="lang">typescript</span></div><pre><code>import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  output: "standalone",                       // 최소 실행본 생성
+  serverExternalPackages: ["better-sqlite3"], // #5에서 추가한 것 유지
+};
+
+export default nextConfig;</code></pre></div>
+  <p>k8s readiness probe가 찌를 가벼운 health 엔드포인트를 만듭니다.</p>
+  <div class="code term"><div class="filename">터미널 · web/</div><pre><code>mkdir -p src/app/api/health</code></pre></div>
+  <div class="code"><div class="filename">web/src/app/api/health/route.ts<span class="lang">typescript</span></div><pre><code>import { NextResponse } from "next/server";
+export function GET() {
+  return NextResponse.json({ ok: true });
+}</code></pre></div>
+
+  <h2 id="dockerfile">2. Dockerfile &amp; .dockerignore</h2>
+  <div class="code"><div class="filename">web/.dockerignore<span class="lang">text</span></div><pre><code>node_modules
+.next
+data
+private
+npm-debug.log
+.git</code></pre></div>
+  <div class="code"><div class="filename">web/Dockerfile<span class="lang">dockerfile</span></div><pre><code># ---- 1) deps + build ----
+FROM node:20-alpine AS builder
+WORKDIR /app
+
+# better-sqlite3(네이티브) 컴파일용 도구
+RUN apk add --no-cache python3 make g++
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+RUN npm run build       # .next/standalone 생성
+
+# ---- 2) runtime ----
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+
+# standalone 실행본 + 정적 파일 + public 을 각각 복사(자동 아님!)
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+
+# SQLite 데이터 디렉토리(마운트 지점)
+RUN mkdir -p /data
+ENV PASTE_JD_DB=/data/paste-jd.db
+
+EXPOSE 3000
+CMD ["node", "server.js"]   # standalone이 만든 진입점</code></pre></div>
+  <div class="callout warn"><span class="tag">public 복사 잊지 말 것</span>
+    <p><code>COPY .../public ./public</code>가 없으면 #4의 <code>/examples/*.docx</code> 다운로드와
+    fs 읽기가 배포에서 깨집니다. standalone은 이 두 폴더를 자동으로 안 담습니다.</p></div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-num">▶</span><h3>로컬에서 빌드 &amp; 실행 확인</h3></div>
+    <div class="code term"><div class="filename">터미널 · 저장소 루트</div><pre><code>docker build -t paste-jd:local web/
+docker run --rm -p 3000:3000 -v "$PWD/web/data:/data" paste-jd:local</code></pre></div>
+    <p><a href="http://localhost:3000" target="_blank">localhost:3000</a>에서 랜딩/대시보드가 뜨면 성공.</p>
+    <div class="callout note"><span class="tag">로컬 docker에서 로그인은?</span>
+      <p>이미지가 <code>NODE_ENV=production</code>이라 쿠키에 <code>Secure</code>가 붙습니다. <code>http://localhost</code>는
+      https가 아니라 브라우저가 쿠키를 저장하지 않아 <b>로그인 테스트는 실패가 정상</b>입니다.
+      로그인은 dev(#5–#7)와 실제 https 배포(#9)에서 검증됩니다. 여기선 “뜨는지”만 확인.</p></div>
+  </div>
+
+  <h2 id="k8s">3. Kubernetes 매니페스트</h2>
+  <p>저장소 루트에 <code>k8s/</code> 폴더를 만들고 3개 파일을 둡니다. physical-spark의
+  <code>pr-auth</code>(빌드 이미지 + hostPath SQLite) 패턴을 그대로 따릅니다.</p>
+  <div class="code term"><div class="filename">터미널 · 저장소 루트</div><pre><code>mkdir -p k8s</code></pre></div>
+
+  <div class="code"><div class="filename">k8s/deployment.yaml<span class="lang">yaml</span></div><pre><code>apiVersion: apps/v1
+kind: Deployment
+metadata: { name: paste-jd, namespace: default }
+spec:
+  replicas: 1
+  strategy: { type: Recreate }        # SQLite 단일 writer
+  selector: { matchLabels: { app: paste-jd } }
+  template:
+    metadata: { labels: { app: paste-jd } }
+    spec:
+      containers:
+        - name: paste-jd
+          image: localhost:5000/paste-jd:latest
+          imagePullPolicy: Always
+          ports: [ { containerPort: 3000 } ]
+          env:
+            - { name: PASTE_JD_DB, value: "/data/paste-jd.db" }
+            - { name: PASTE_JD_SITE, value: "https://paste-jd.bit-habit.com" }
+            - { name: PASTE_JD_COOKIE_DOMAIN, value: ".bit-habit.com" }
+            - { name: PASTE_JD_OWNER, value: "gichanlee@icloud.com" }
+          envFrom:
+            - secretRef: { name: pr-auth-email, optional: true }  # SMTP secret 재사용
+          readinessProbe:
+            httpGet: { path: /api/health, port: 3000 }
+            initialDelaySeconds: 5
+          volumeMounts:
+            - { name: data, mountPath: /data }
+      volumes:
+        - name: data
+          hostPath:
+            path: /home/ubuntu/workspace/paste-jd-data
+            type: DirectoryOrCreate</code></pre></div>
+
+  <div class="code"><div class="filename">k8s/service.yaml<span class="lang">yaml</span></div><pre><code>apiVersion: v1
+kind: Service
+metadata: { name: paste-jd-svc, namespace: default }
+spec:
+  selector: { app: paste-jd }
+  ports:
+    - { port: 80, targetPort: 3000 }   # 외부 80 → 컨테이너 3000</code></pre></div>
+
+  <div class="code"><div class="filename">k8s/ingress.yaml<span class="lang">yaml</span></div><pre><code>apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: paste-jd
+  namespace: default
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: paste-jd.bit-habit.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: { name: paste-jd-svc, port: { number: 80 } }
+  tls:
+    - hosts: [ paste-jd.bit-habit.com ]
+      secretName: tls-secret          # 기존 *.bit-habit.com 와일드카드 인증서 재사용</code></pre></div>
+  <div class="callout why"><span class="tag">Why DNS/인증서가 필요 없나</span>
+    <p><code>*.bit-habit.com</code> 와일드카드 DNS(Route53)와 와일드카드 TLS(<code>tls-secret</code>)가 이미 있어서,
+    새 서브도메인은 <b>Ingress 규칙 한 개</b>만 추가하면 즉시 HTTPS로 살아납니다. 새 인증서 발급도,
+    DNS 레코드 추가도 없습니다.</p></div>
+  <div class="callout note"><span class="tag">모든 경로가 같은 서비스로</span>
+    <p>physical-spark은 <code>/api/auth</code>를 별도 FastAPI 서비스로 분리했지만, 우리는
+    auth도 Next.js 안에 있으므로 <b><code>/</code> 하나로 전부</b> paste-jd-svc에 보냅니다. 같은 origin이라
+    쿠키도 first-party로 유지됩니다.</p></div>
+
+  <h2>4. 커밋 &amp; PR</h2>
+  <div class="code term"><div class="filename">터미널</div><pre><code>git add web/Dockerfile web/.dockerignore web/next.config.ts web/src/app/api/health k8s
+git commit -m "build: standalone Dockerfile + k8s manifests (#8)"
+git push -u origin feat/8-docker-k8s
+gh pr create --base main --title "build: docker + k8s (#8)" --body "Closes #8"</code></pre></div>
+
+  <ul class="check">
+    <li><code>docker build web/</code> 성공, 컨테이너가 3000에서 뜬다</li>
+    <li><code>k8s/</code>에 deployment/service/ingress 3종</li>
+    <li>PR merge (카드 → Done)</li>
+  </ul>
+
+  <div class="pager">
+    <a href="07-viewer-gating.html"><span>이전</span><b>← #7 뷰어 게이팅</b></a>
+    <a class="next" href="09-cicd-deploy.html"><span>다음</span><b>#9 CI/CD &amp; 배포 →</b></a>
+  </div>
+
+</div>
+<script src="copy.js"></script>
+</body>
+</html>

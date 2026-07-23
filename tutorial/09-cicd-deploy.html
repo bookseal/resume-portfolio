@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>#9 CI/CD &amp; 첫 배포 · paste-jd 튜토리얼</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="bar">
+    <span class="brand">paste<span class="dot">·</span>jd 튜토리얼</span>
+    <nav>
+      <a href="index.html">← 보드</a>
+      <a href="#server">서버 준비</a>
+      <a href="#scripts">배포 스크립트</a>
+      <a href="#actions">Actions</a>
+      <a href="#verify">검증</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero">
+    <span class="issue-badge">Issue #9</span>
+    <span class="eyebrow" style="margin-left:8px">Milestone 3 · Deploy</span>
+    <h1>CI/CD &amp; 첫 배포</h1>
+    <p class="lede"><code>main</code>에 push하면 자동 배포되는 파이프라인을 세우고,
+    <code>paste-jd.bit-habit.com</code>을 처음으로 라이브에 띄웁니다.</p>
+  </section>
+
+  <div class="meta-grid">
+    <div class="meta-card"><h4>배우는 것</h4>
+      <p>GitHub Actions · SSH 배포 · forced-command 키 · <code>ops/deploy.sh</code> · <code>kubectl</code> · 로컬 레지스트리</p></div>
+    <div class="meta-card"><h4>완료 기준</h4>
+      <p><code>https://paste-jd.bit-habit.com</code>가 열리고, push 한 번으로 재배포된다.</p></div>
+  </div>
+
+  <div class="code term"><div class="filename">터미널 · 이슈 + 브랜치</div><pre><code>gh issue create --title "#9 CI/CD & 첫 배포" --project "paste-jd SaaS" \
+  --body "Actions SSH 배포 + forced-command 키 + ops/deploy.sh. 첫 배포."
+git switch main &amp;&amp; git pull &amp;&amp; git switch -c feat/9-cicd</code></pre></div>
+
+  <h2 id="server">1. 서버에 저장소 클론 (한 번만)</h2>
+  <div class="code term"><div class="filename">터미널 · ssh bit-habit</div><pre><code>ssh bit-habit
+# --- 서버 안에서 ---
+cd ~/workspace
+git clone https://github.com/bookseal/resume-pipeline.git   # 이미 있으면 생략
+mkdir -p ~/workspace/paste-jd-data                            # SQLite hostPath
+exit</code></pre></div>
+  <div class="callout note"><span class="tag">확인</span>
+    <p>서버에 <code>docker</code>, <code>k3s</code>(<code>sudo k3s kubectl</code>), 로컬 레지스트리 <code>localhost:5000</code>가
+    이미 있습니다(pr-auth가 쓰는 것과 동일). <code>infra.bit-habit.com</code>에서 현재 구성을 볼 수 있어요.</p></div>
+
+  <h2 id="scripts">2. 배포 스크립트 2개</h2>
+  <p>하나는 저장소 안(<code>ops/deploy.sh</code>, 실제 빌드/롤아웃), 하나는 서버 홈
+  (<code>paste-jd-deploy.sh</code>, git 갱신 후 앞의 것 호출).</p>
+
+  <div class="code"><div class="filename">ops/deploy.sh<span class="lang">bash</span> (저장소에 커밋)</div><pre><code>#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."   # 저장소 루트
+
+echo "==&gt; building image on server (arm64)"
+docker build -t localhost:5000/paste-jd:latest web/
+docker push localhost:5000/paste-jd:latest
+
+echo "==&gt; applying k8s manifests"
+sudo -n k3s kubectl apply -f k8s/
+
+echo "==&gt; rolling out"
+sudo -n k3s kubectl rollout restart deploy/paste-jd
+sudo -n k3s kubectl rollout status deploy/paste-jd --timeout=180s
+echo "==&gt; done"</code></pre></div>
+
+  <div class="code"><div class="filename">터미널 · ssh bit-habit — 서버 홈에 직접 작성</div><pre><code>cat &gt; ~/workspace/paste-jd-deploy.sh &lt;&lt;'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+cd /home/ubuntu/workspace/resume-pipeline
+before=$(git rev-parse HEAD)
+git fetch --quiet origin main
+git reset --hard origin/main
+exec ops/deploy.sh "$before"
+EOF
+chmod +x ~/workspace/paste-jd-deploy.sh</code></pre></div>
+  <div class="callout note"><span class="tag">저장소 쪽 스크립트 실행권한</span>
+    <p>로컬에서 <code>chmod +x ops/deploy.sh</code> 후 커밋하세요. git이 실행 비트를 보존합니다.</p></div>
+
+  <h2 id="key">3. forced-command 배포 키</h2>
+  <div class="step">
+    <div class="step-head"><span class="step-num">a</span><h3>키 쌍 생성 (로컬)</h3></div>
+    <div class="code term"><div class="filename">터미널 · 로컬(저장소 밖 임시 위치)</div><pre><code>ssh-keygen -t ed25519 -f /tmp/paste-jd-ci -N "" -C "paste-jd-ci-deploy"
+cat /tmp/paste-jd-ci.pub    # 공개키 (서버에 등록)
+cat /tmp/paste-jd-ci        # 개인키 (GitHub secret에 등록)</code></pre></div>
+  </div>
+  <div class="step">
+    <div class="step-head"><span class="step-num">b</span><h3>서버 authorized_keys에 forced-command로 등록</h3></div>
+    <p><code>ssh bit-habit</code> 후, 아래 한 줄을 <code>~/.ssh/authorized_keys</code>에 추가합니다.
+    <code>ssh-ed25519 AAAA…</code> 부분을 방금 출력된 <b>공개키</b>로 교체하세요.</p>
+    <div class="code term"><div class="filename">~/.ssh/authorized_keys (서버) — 한 줄</div><pre><code>restrict,command="/home/ubuntu/workspace/paste-jd-deploy.sh" ssh-ed25519 AAAA...공개키... paste-jd-ci-deploy</code></pre></div>
+    <div class="callout why"><span class="tag">restrict + command</span>
+      <p><code>restrict</code>는 포트포워딩·에이전트 등 모든 부가기능을 끄고, <code>command="…"</code>는 이 키로
+      들어온 어떤 요청이든 <b>그 스크립트만</b> 실행하게 강제합니다. 그래서 워크플로우가 보내는
+      <code>true</code>는 무시되고 배포 스크립트가 돕니다.</p></div>
+  </div>
+  <div class="step">
+    <div class="step-head"><span class="step-num">c</span><h3>개인키를 GitHub secret으로</h3></div>
+    <div class="code term"><div class="filename">터미널 · 로컬 저장소</div><pre><code>gh secret set DEPLOY_SSH_KEY &lt; /tmp/paste-jd-ci
+rm /tmp/paste-jd-ci /tmp/paste-jd-ci.pub   # 로컬 키 삭제</code></pre></div>
+  </div>
+
+  <h2 id="actions">4. GitHub Actions 워크플로우</h2>
+  <div class="code term"><div class="filename">터미널 · 저장소 루트</div><pre><code>mkdir -p .github/workflows</code></pre></div>
+  <div class="code"><div class="filename">.github/workflows/deploy.yml<span class="lang">yaml</span></div><pre><code>name: deploy
+on:
+  push:
+    branches: [main]
+    paths: ["web/**", "k8s/**", "ops/**", ".github/workflows/deploy.yml"]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger server deploy over SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" &gt; ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh -o StrictHostKeyChecking=accept-new -i ~/.ssh/id_ed25519 \
+            ubuntu@158.180.71.122 true</code></pre></div>
+  <div class="callout note"><span class="tag"><code>true</code>의 정체</span>
+    <p>워크플로우는 <code>true</code>라는 무의미한 명령을 보냅니다. forced-command 때문에 서버는 이를 버리고
+    <code>paste-jd-deploy.sh</code>를 실행합니다 — CI 쪽엔 어떤 배포 로직도 노출되지 않습니다.</p></div>
+
+  <h2 id="firstdeploy">5. 첫 배포</h2>
+  <p>먼저 PR을 merge해 <code>main</code>을 갱신하고, 첫 배포는 <b>수동</b>으로 안전하게 돌려봅니다.</p>
+  <div class="code term"><div class="filename">터미널 · 로컬</div><pre><code>chmod +x ops/deploy.sh
+git add ops .github/workflows/deploy.yml
+git commit -m "ci: SSH deploy pipeline + ops/deploy.sh (#9)"
+git push -u origin feat/9-cicd
+gh pr create --base main --title "ci: deploy pipeline (#9)" --body "Closes #9"
+gh pr merge --squash --delete-branch</code></pre></div>
+  <div class="code term"><div class="filename">터미널 · 첫 배포 수동 실행 (서버)</div><pre><code>ssh bit-habit '/home/ubuntu/workspace/paste-jd-deploy.sh'</code></pre></div>
+  <p>이후부터는 <code>main</code>에 push만 하면 Actions가 자동으로 같은 스크립트를 돌립니다.
+  진행 상황은 <code>gh run watch</code> 또는 GitHub Actions 탭에서 확인.</p>
+
+  <h2 id="verify">6. 검증</h2>
+  <div class="code term"><div class="filename">터미널</div><pre><code>curl -I https://paste-jd.bit-habit.com          # 200 + HTTPS
+# 파드/로그 확인 (서버)
+ssh bit-habit 'sudo -n k3s kubectl get pods -l app=paste-jd'
+ssh bit-habit 'sudo -n k3s kubectl logs deploy/paste-jd --tail=50'</code></pre></div>
+  <ol>
+    <li>브라우저로 <code>https://paste-jd.bit-habit.com</code> → 랜딩/cookbook/dashboard 확인.</li>
+    <li>Sign in에 <code>gichanlee@icloud.com</code> 입력. SMTP 미설정이라 메일 대신 <b>파드 로그</b>에 링크가 찍힙니다:
+      <div class="code term" style="margin-top:8px"><div class="filename">터미널</div><pre><code>ssh bit-habit "sudo -n k3s kubectl logs deploy/paste-jd | grep 'DEV EMAIL'"</code></pre></div>
+      그 링크를 브라우저로 열면 로그인되고, 대시보드에 소유자 섹션이 보입니다.</li>
+    <li>파드를 재시작해도 세션이 유지되는지: <code>kubectl rollout restart</code> 후 다시 접속 →
+      로그인 상태 유지(= hostPath SQLite 영속 확인).</li>
+  </ol>
+  <div class="callout learn"><span class="tag">🧩 Your turn (선택)</span>
+    <p>실제 이메일 발송을 켜려면 physical-spark의 <code>pr-auth-email</code> secret이 이미 클러스터에 있으니,
+    <code>lib/email.ts</code>에 <code>nodemailer</code>로 SMTP 발송을 구현하고 <code>SMTP_HOST</code> env를 Deployment에 추가해 보세요.
+    본인만 쓸 거면 파드 로그로 링크를 받는 지금 방식으로도 충분합니다.</p></div>
+
+  <ul class="check">
+    <li><code>https://paste-jd.bit-habit.com</code>가 HTTPS로 열린다</li>
+    <li>파드 로그의 링크로 소유자 로그인이 된다</li>
+    <li><code>main</code> push → 자동 재배포가 동작한다</li>
+    <li>PR merge (카드 → Done). <b>Milestone 3 완료 — 배포 성공! 🎉</b></li>
+  </ul>
+
+  <div class="callout why"><span class="tag">여기까지 온 당신</span>
+    <p>이제 랜딩에서 이 튜토리얼로 링크를 걸어(<code>public/tutorial/</code>로 복사) 다른 취준생도
+    따라올 수 있게 하고, 배포된 사이트를 기반으로 Claude Code와 함께 계속 개선하면 됩니다.
+    다음(#10)은 실제 Python 파이프라인 연결 — 배포 후 천천히.</p></div>
+
+  <div class="pager">
+    <a href="08-docker-k8s.html"><span>이전</span><b>← #8 Docker + k8s</b></a>
+    <a class="next" href="index.html"><span>다음</span><b>보드로 · #10 아웃라인 →</b></a>
+  </div>
+
+</div>
+<script src="copy.js"></script>
+</body>
+</html>

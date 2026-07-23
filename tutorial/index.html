@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>paste-jd 튜토리얼 · Next.js SaaS 직접 만들기</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="bar">
+    <span class="brand">paste<span class="dot">·</span>jd 튜토리얼</span>
+    <nav>
+      <a href="#board">보드</a>
+      <a href="#how">사용법</a>
+      <a href="#prereq">준비물</a>
+      <a href="#workflow">워크플로우</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero">
+    <span class="eyebrow">Next.js · TypeScript · React · AI agent system</span>
+    <h1>resume-pipeline을 <code>paste-jd.bit-habit.com</code> SaaS로 직접 만들기</h1>
+    <p class="lede">
+      이 튜토리얼은 <b>당신이 모든 코드와 터미널 명령을 직접 타이핑</b>하도록 설계됐습니다.
+      Claude는 대신 코드를 치지 않습니다 — 각 페이지의 코드/명령을 복붙하며 따라 하면,
+      GitHub 이슈 하나가 곧 기능 하나가 되어 완성됩니다.
+    </p>
+  </section>
+
+  <div class="meta-grid">
+    <div class="meta-card">
+      <h4>1순위 목표</h4>
+      <p>JavaScript · TypeScript · React · Next.js를 <b>손으로</b> 익히기. Vibe coding이 아니라 hands-on.</p>
+    </div>
+    <div class="meta-card">
+      <h4>2순위 목표</h4>
+      <p>“Next.js + AI agent system” 포트폴리오 + 취준생이 clone하는 boilerplate.</p>
+    </div>
+    <div class="meta-card">
+      <h4>만드는 것</h4>
+      <p>기존 Python 파이프라인을 감싸는 SaaS 대시보드/뷰어. 랜딩 + cookbook + 매직링크 로그인.</p>
+    </div>
+    <div class="meta-card">
+      <h4>배포</h4>
+      <p><code>paste-jd.bit-habit.com</code> — physical-spark과 같은 bit-habit k3s 인프라.</p>
+    </div>
+  </div>
+
+  <h2 id="board">📋 작업 보드 — 이슈 = 튜토리얼 페이지</h2>
+  <p>
+    각 카드는 GitHub Issue 하나이자 튜토리얼 한 페이지입니다. 위에서 아래로,
+    <b>Foundations → Auth → Deploy → Iterate</b> 순서로 진행하세요.
+  </p>
+
+  <div class="board">
+    <div class="col">
+      <h4>M0 · 손풀기</h4>
+      <a class="card" href="00-warmup.html">
+        <span class="n">#0</span><span class="t">면접 손풀기 · fetch → map</span>
+        <span class="d">React 컴포넌트 하나 · npm 없이 · 라이브 코딩 대비 30분</span>
+      </a>
+      <h4 style="margin-top:18px">M1 · Foundations</h4>
+      <a class="card" href="01-scaffold.html">
+        <span class="n">#1</span><span class="t">Scaffold &amp; 보드</span>
+        <span class="d">INDEX.md · GitHub Project · create-next-app</span>
+      </a>
+      <a class="card" href="02-landing.html">
+        <span class="n">#2</span><span class="t">랜딩 페이지</span>
+        <span class="d">John Doe · Input→Function→Output</span>
+      </a>
+      <a class="card" href="03-cookbook.html">
+        <span class="n">#3</span><span class="t">Cookbook</span>
+        <span class="d">운영 방식 · 마크다운 렌더</span>
+      </a>
+      <a class="card" href="04-dashboard.html">
+        <span class="n">#4</span><span class="t">Dashboard 뷰어</span>
+        <span class="d">resume.md · docx 다운로드 · fit report</span>
+      </a>
+    </div>
+
+    <div class="col">
+      <h4>M2 · Auth</h4>
+      <a class="card" href="05-auth-backend.html">
+        <span class="n">#5</span><span class="t">Auth 백엔드</span>
+        <span class="d">SQLite · 매직링크 start/verify</span>
+      </a>
+      <a class="card" href="06-auth-ui.html">
+        <span class="n">#6</span><span class="t">Auth UI 위젯</span>
+        <span class="d">로그인 모달 · /me · /logout</span>
+      </a>
+      <a class="card" href="07-viewer-gating.html">
+        <span class="n">#7</span><span class="t">뷰어 게이팅</span>
+        <span class="d">소유자만 실데이터 · allowlist</span>
+      </a>
+    </div>
+
+    <div class="col">
+      <h4>M3 · Deploy</h4>
+      <a class="card" href="08-docker-k8s.html">
+        <span class="n">#8</span><span class="t">Docker + k8s</span>
+        <span class="d">standalone 이미지 · Ingress</span>
+      </a>
+      <a class="card" href="09-cicd-deploy.html">
+        <span class="n">#9</span><span class="t">CI/CD &amp; 첫 배포</span>
+        <span class="d">GitHub Actions · ssh bit-habit</span>
+      </a>
+    </div>
+
+    <div class="col">
+      <h4>M4 · Iterate</h4>
+      <a class="card" href="10-pipeline.html">
+        <span class="n">#10</span><span class="t">실제 파이프라인 연결</span>
+        <span class="d">배포 후 · Claude Code와 함께 (아웃라인)</span>
+      </a>
+    </div>
+  </div>
+
+  <h2 id="how">🧭 이 튜토리얼 사용법</h2>
+  <ol>
+    <li>위 보드에서 <b>#1부터 순서대로</b> 한 페이지씩 엽니다.</li>
+    <li>각 페이지 맨 위의 <code>gh issue create</code> 명령으로 <b>그 이슈를 먼저 생성</b>합니다.</li>
+    <li>브랜치를 만들고, 페이지의 코드/명령을 <b>직접 타이핑</b>(또는 복붙)합니다.</li>
+    <li>동작을 확인하고 PR을 올립니다 → 보드에서 카드가 <b>In Review</b>로 이동합니다.</li>
+    <li>Claude Code와 함께 리뷰하고 merge → 카드가 <b>Done</b>으로. 다음 이슈로.</li>
+  </ol>
+  <div class="callout note">
+    <span class="tag">Tip</span>
+    <p>코드 블록 오른쪽 위 <b>Copy</b> 버튼으로 복사할 수 있습니다. 하지만 학습이 목적이니,
+    가능하면 <b>직접 타이핑</b>하며 각 줄이 무슨 일을 하는지 곱씹어 보세요.</p>
+  </div>
+
+  <h2 id="prereq">🧰 시작 전 준비물</h2>
+  <ul class="check">
+    <li><b>Node.js 20+</b> 와 npm (<code>node -v</code> 로 확인)</li>
+    <li><b>git</b> 과 <b>GitHub CLI</b> <code>gh</code> (<code>gh auth status</code> 로 로그인 확인)</li>
+    <li>이 저장소 <code>resume-pipeline</code> 로컬 클론 (여기 <code>web/</code> 를 추가합니다)</li>
+    <li>배포용(M3): <code>docker</code>, <code>ssh bit-habit</code> 접속 권한, <code>kubectl</code> (서버에서 사용)</li>
+    <li>참고 사이트: <a href="https://infra.bit-habit.com" target="_blank">infra.bit-habit.com</a> — 지금 인프라가 어떻게 도는지</li>
+  </ul>
+
+  <h2 id="workflow">🔁 GitHub Project 워크플로우</h2>
+  <p>이번에 GitHub Projects(칸반)를 처음 써 봅니다. 큰 그림은 이렇습니다:</p>
+  <table>
+    <tr><th>컬럼</th><th>의미</th><th>언제 옮기나</th></tr>
+    <tr><td>Todo</td><td>아직 시작 안 한 이슈</td><td>이슈 생성 직후 자동</td></tr>
+    <tr><td>In Progress</td><td>지금 작업 중</td><td>브랜치 파고 코딩 시작할 때</td></tr>
+    <tr><td>In Review</td><td>PR 올려 리뷰 대기</td><td><code>gh pr create</code> 직후</td></tr>
+    <tr><td>Done</td><td>merge 완료</td><td>PR merge 시 자동</td></tr>
+  </table>
+  <div class="callout why">
+    <span class="tag">Why 이렇게</span>
+    <p>이슈를 잘게 쪼개 <b>하나씩</b> 처리하면 (1) 각 PR이 작아 리뷰가 쉽고,
+    (2) 매 merge마다 배포가 살아있는 상태로 유지되며, (3) 포트폴리오에 “문제 → 해결”
+    커밋 히스토리가 또렷하게 남습니다. 큰 SaaS를 한 번에 만드는 게 아니라,
+    작은 기능을 반복해 쌓아 올리는 감각을 기르는 게 이 프로젝트의 진짜 학습 포인트입니다.</p>
+  </div>
+
+  <div class="pager">
+    <span></span>
+    <a class="next" href="01-scaffold.html">
+      <span>다음</span><b>#1 Scaffold &amp; 보드 셋업 →</b>
+    </a>
+  </div>
+
+</div>
+<script src="copy.js"></script>
+</body>
+</html>

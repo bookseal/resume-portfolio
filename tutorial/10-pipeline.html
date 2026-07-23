@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>#10 실제 파이프라인 연결 (아웃라인) · paste-jd 튜토리얼</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="bar">
+    <span class="brand">paste<span class="dot">·</span>jd 튜토리얼</span>
+    <nav><a href="index.html">← 보드</a></nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero">
+    <span class="issue-badge">Issue #10</span>
+    <span class="eyebrow" style="margin-left:8px">Milestone 4 · Iterate (배포 후)</span>
+    <h1>실제 파이프라인 연결 (아웃라인)</h1>
+    <p class="lede">배포가 살아있는 상태에서, mock이던 내부 로직을 실제 Python <code>md2docx</code>로
+    승격합니다. 이 페이지는 <b>방향만 잡는 아웃라인</b> — 세부 코드는 배포 후 Claude Code와 함께 채웁니다.</p>
+  </section>
+
+  <div class="callout note"><span class="tag">왜 아웃라인만?</span>
+    <p>#1–#9로 “보이는 SaaS + 실제 로그인 + 배포”가 완성됩니다. 실제 docx 생성은
+    폴리글랏 이미지(Node+Python)라 난이도가 한 단계 높아, 배포 이후 천천히 붙이는 게 학습에 좋습니다.</p></div>
+
+  <h2>아웃라인 단계</h2>
+  <ol>
+    <li><b>파이프라인 API 라우트</b>: <code>web/src/app/api/pipeline/route.ts</code>에서
+      <code>child_process</code>(<code>execFile</code>)로 <code>python3 ../tools/md2docx_template.py &lt;md&gt; &lt;out&gt;</code> 호출.
+      입력 md는 요청 본문 또는 소유자 폴더에서, 결과 docx 경로를 반환.</li>
+    <li><b>폴리글랏 Dockerfile</b>: runner 스테이지에 <code>apk add python3 py3-pip</code> +
+      <code>pip install python-docx</code>, 그리고 저장소의 <code>tools/</code>·<code>templates/</code>를 이미지에 복사.
+      (지금 build 컨텍스트가 <code>web/</code>이므로, 컨텍스트를 저장소 루트로 올리거나 tools를 복사해 넣도록 조정.)</li>
+    <li><b>fit report를 실제 계산</b>: mock 숫자 대신 Python <code>report_fit</code> 출력(줄 수/초과 불릿)을 파싱해
+      #4의 배지에 반영.</li>
+    <li><b>실데이터 이관</b>: 본인 이력서/자소서 md·docx를 서버 hostPath로 옮김
+      <div class="code term" style="margin-top:8px"><div class="filename">터미널</div><pre><code>scp -r ~/workspace/chan_이력서_자기소개서_포트폴리오/03_output/* \
+  bit-habit:/home/ubuntu/workspace/paste-jd-data/owner/</code></pre></div>
+      Deployment에 <code>PASTE_JD_OWNER_DIR=/data/owner</code> env 추가 → #7의 소유자 섹션이 실데이터를 읽음.</li>
+    <li><b>JD 붙여넣기 → 생성 UI</b>: 이름처럼 “paste JD” 입력창을 만들어, 붙여넣은 JD로
+      파이프라인을 돌려 맞춤 산출물을 뷰어에 표시(초기엔 소유자 전용).</li>
+  </ol>
+
+  <div class="callout learn"><span class="tag">Claude Code와 함께</span>
+    <p>여기서부터는 이 저장소를 clone한 취준생도, 본인도 Claude Code로 fine-tune하는 구간입니다.
+    각 항목을 다시 <code>gh issue create</code>로 잘게 쪼개(#11, #12…) 같은 “이슈→PR→리뷰→merge” 루프를 반복하세요.</p></div>
+
+  <div class="pager">
+    <a href="09-cicd-deploy.html"><span>이전</span><b>← #9 CI/CD &amp; 배포</b></a>
+    <a class="next" href="index.html"><span>완료</span><b>보드 허브로 →</b></a>
+  </div>
+
+</div>
+<script src="copy.js"></script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>#0 면접 손풀기 · fetch → map 컴포넌트 하나 · paste-jd 튜토리얼</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="bar">
+    <span class="brand">paste<span class="dot">·</span>jd 튜토리얼</span>
+    <nav>
+      <a href="index.html">← 보드</a>
+      <a href="#run">30초 실행</a>
+      <a href="#build">손으로 짓기</a>
+      <a href="#ts">Next.js/TS 버전</a>
+      <a href="#drill">라이브코딩 대비</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero">
+    <span class="issue-badge">Warm-up</span>
+    <span class="eyebrow" style="margin-left:8px">면접 당일 · 30분 손풀기</span>
+    <h1>작동하는 작은 것 하나 — <code>fetch → map</code> 컴포넌트</h1>
+    <p class="lede">큰 튜토리얼을 완주할 시간이 없을 때, 라이브 코딩에서 실제로 나오는 <b>단 하나의 패턴</b>을
+    손으로 칩니다: <b>데이터를 불러와(fetch) 목록으로 렌더(map)</b>. npm·빌드 없이 이 HTML 하나로 됩니다.</p>
+  </section>
+
+  <div class="meta-grid">
+    <div class="meta-card"><h4>배우는 것</h4>
+      <p><code>useState</code> · <code>useEffect</code> · <code>fetch</code> · <code>.map()</code> 렌더 ·
+      loading / error 세 상태. 프론트 라이브 코딩의 80%가 이 조합.</p></div>
+    <div class="meta-card"><h4>완료 기준</h4>
+      <p>버튼을 누르면 API에서 사용자 목록을 불러와 카드로 보여준다. 로딩 중·에러도 화면에 나온다.</p></div>
+  </div>
+
+  <div class="callout note"><span class="tag">왜 이거 하나면 되나</span>
+    <p>체험형 인턴 라이브 코딩은 "React 마스터"를 안 본다. <b>"데이터를 화면에 뿌릴 줄 아는가, 상태를 다룰 줄 아는가"</b>를 본다.
+    그게 정확히 <code>fetch → map</code>이다. 이걸 손에 익히면 얼지 않는다.</p></div>
+
+  <h2 id="run">1. 30초 실행 — 먼저 돌아가는 걸 본다</h2>
+  <p>아래 전체를 <code>warmup.html</code>로 저장하고 브라우저로 열면 바로 작동합니다.
+  React를 CDN으로 불러오고 <code>&lt;script type="text/babel"&gt;</code>이 JSX를 즉석 변환합니다 — <b>설치 0</b>.</p>
+
+  <div class="code"><div class="filename">warmup.html · 전체 (저장 후 더블클릭)</div><pre><code>&lt;!doctype html&gt;
+&lt;html&gt;
+&lt;head&gt;&lt;meta charset="utf-8"&gt;&lt;title&gt;fetch → map&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+  &lt;div id="root"&gt;&lt;/div&gt;
+
+  &lt;script src="https://unpkg.com/react@18/umd/react.development.js"&gt;&lt;/script&gt;
+  &lt;script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"&gt;&lt;/script&gt;
+  &lt;script src="https://unpkg.com/@babel/standalone/babel.min.js"&gt;&lt;/script&gt;
+
+  &lt;script type="text/babel"&gt;
+    const { useState, useEffect } = React;
+
+    function UserList() {
+      const [users, setUsers]     = useState([]);   // 데이터
+      const [loading, setLoading] = useState(false); // 로딩 상태
+      const [error, setError]     = useState(null);  // 에러 상태
+
+      async function load() {
+        setLoading(true);
+        setError(null);
+        try {
+          const res = await fetch("https://jsonplaceholder.typicode.com/users");
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          const data = await res.json();
+          setUsers(data);
+        } catch (e) {
+          setError(e.message);
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      return (
+        &lt;div style={{ font: "16px system-ui", maxWidth: 520, margin: "40px auto" }}&gt;
+          &lt;button onClick={load}&gt;사용자 불러오기&lt;/button&gt;
+          {loading &amp;&amp; &lt;p&gt;불러오는 중…&lt;/p&gt;}
+          {error &amp;&amp; &lt;p style={{ color: "crimson" }}&gt;에러: {error}&lt;/p&gt;}
+          {users.map((u) =&gt; (
+            &lt;div key={u.id} style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, margin: "8px 0" }}&gt;
+              &lt;b&gt;{u.name}&lt;/b&gt; — {u.email}
+            &lt;/div&gt;
+          ))}
+        &lt;/div&gt;
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(&lt;UserList /&gt;);
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre></div>
+
+  <div class="callout learn"><span class="tag">이 아래 라이브 데모</span>
+    <p>이 페이지 자체에 위 컴포넌트가 실제로 돌아갑니다 ↓ 버튼을 눌러 보세요 (인터넷 연결 필요).</p>
+  </div>
+
+  <div id="demo-root" style="border:1px solid var(--line, #e4e8ec); border-radius:12px; padding:8px 20px; margin:14px 0; background:#fff;"></div>
+
+  <h2 id="build">2. 손으로 짓기 — 5줄씩 이해하며 타이핑</h2>
+  <p>돌아가는 걸 봤으면, 이제 <b>빈 파일에 처음부터 직접</b> 쳐 봅니다. 외우지 말고 이 순서를 이해하세요.</p>
+
+  <div class="code"><div class="filename">머릿속 순서 (라이브 코딩에서 이대로 말하며 짜면 좋다)</div><pre><code>1) 상태 3개를 만든다     → data(빈 배열), loading(false), error(null)
+2) load 함수를 만든다    → loading=true → fetch → json → setData → 실패하면 setError → 끝에 loading=false
+3) 화면을 그린다         → 버튼 + (loading이면 "로딩") + (error면 에러) + data.map(...)
+4) key를 잊지 않는다     → map으로 만든 각 요소에 key={고유값}
+5) 언제 부를지 정한다    → 버튼 클릭(onClick) 또는 처음 뜰 때(useEffect(fn, []))</code></pre></div>
+
+  <div class="callout note"><span class="tag">면접에서 자주 꼬는 3곳</span>
+    <p>① <b><code>key</code> 빠뜨림</b> — map 렌더엔 항상 key. ②
+    <b>loading/error 무시</b> — "성공"만 그리면 미완성. 세 상태를 다 그리는 게 프로답다. ③
+    <b>fetch 에러 처리</b> — <code>res.ok</code> 체크 없이 <code>.json()</code>하면 조용히 깨진다.</p></div>
+
+  <h2 id="ts">3. 같은 것을 Next.js + TypeScript로</h2>
+  <p>면접이 Next.js/TS 환경이면 문법만 살짝 다르다 — 로직은 위와 <b>똑같다</b>. 타입만 붙이면 된다.</p>
+
+  <div class="code"><div class="filename">app/users/page.tsx · "use client" 컴포넌트</div><pre><code>"use client";
+import { useState } from "react";
+
+type User = { id: number; name: string; email: string };
+
+export default function UsersPage() {
+  const [users, setUsers]     = useState&lt;User[]&gt;([]);   // ← 제네릭으로 타입
+  const [loading, setLoading] = useState(false);
+  const [error, setError]     = useState&lt;string | null&gt;(null);
+
+  async function load() {
+    setLoading(true); setError(null);
+    try {
+      const res = await fetch("https://jsonplaceholder.typicode.com/users");
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data: User[] = await res.json();
+      setUsers(data);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "unknown");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    &lt;div&gt;
+      &lt;button onClick={load}&gt;사용자 불러오기&lt;/button&gt;
+      {loading &amp;&amp; &lt;p&gt;불러오는 중…&lt;/p&gt;}
+      {error &amp;&amp; &lt;p style={{ color: "crimson" }}&gt;에러: {error}&lt;/p&gt;}
+      {users.map((u) =&gt; (
+        &lt;div key={u.id}&gt;&lt;b&gt;{u.name}&lt;/b&gt; — {u.email}&lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  );
+}</code></pre></div>
+
+  <div class="callout learn"><span class="tag">TS에서 딱 3개만 기억</span>
+    <p>① <code>useState&lt;User[]&gt;([])</code> — 배열 타입. ②
+    <code>type User = {...}</code> — 응답 모양을 타입으로. ③
+    <code>e instanceof Error</code> — catch의 <code>e</code>는 <code>unknown</code>이라 좁혀줘야 <code>.message</code> 접근.</p></div>
+
+  <h2 id="drill">4. 라이브 코딩 대비 — 확장 3연습 (시간 남으면)</h2>
+  <p>기본이 손에 붙었으면, 면접관이 흔히 얹는 요구를 미리 쳐 봅니다. 각 5분.</p>
+  <div class="code"><div class="filename">확장 과제</div><pre><code>A. 처음 뜰 때 자동 로드   → useEffect(() =&gt; { load(); }, []);  // 버튼 없이
+B. 검색 필터 추가         → 입력창 state + users.filter(u =&gt; u.name.includes(q)).map(...)
+C. 상세 보기             → 카드 클릭 → 선택된 user를 state로 → 아래에 상세 렌더
+</code></pre></div>
+
+  <div class="callout note"><span class="tag">AI 도구를 쓰는 모습이 곧 강점</span>
+    <p>이 역할은 "AI로 10x"를 원한다(메일도 AI 도구 준비를 요청). 라이브 코딩에서
+    <b>Claude Code로 스캐폴딩하고, 왜 그렇게 짰는지 설명</b>하면, 프론트 깊이의 약점이
+    "AI-native로 빠르게 만드는 사람"이라는 강점으로 뒤집힌다. 손으로 짤 줄 알되, AI로 가속하는 걸 보여줘라.</p></div>
+
+  <div class="pager">
+    <a class="next" href="index.html">← 튜토리얼 보드로</a>
+    <a class="next" href="01-scaffold.html">#1 Scaffold로 이어가기 →</a>
+  </div>
+
+</div>
+
+<!-- 이 페이지에서 위 컴포넌트를 실제로 렌더 (데모용) -->
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+  const { useState } = React;
+  function UserList() {
+    const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    async function load() {
+      setLoading(true); setError(null);
+      try {
+        const res = await fetch("https://jsonplaceholder.typicode.com/users");
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        setUsers(await res.json());
+      } catch (e) { setError(e.message); }
+      finally { setLoading(false); }
+    }
+    return (
+      <div style={{ font: "16px system-ui", padding: "8px 0" }}>
+        <button onClick={load} style={{ padding: "8px 16px", borderRadius: 8, cursor: "pointer" }}>사용자 불러오기</button>
+        {loading && <p>불러오는 중…</p>}
+        {error && <p style={{ color: "crimson" }}>에러: {error}</p>}
+        {users.map((u) => (
+          <div key={u.id} style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, margin: "8px 0" }}>
+            <b>{u.name}</b> — {u.email}
+          </div>
+        ))}
+      </div>
+    );
+  }
+  ReactDOM.createRoot(document.getElementById("demo-root")).render(<UserList />);
+</script>
+</body>
+</html>

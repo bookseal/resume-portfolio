@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>#7 뷰어 게이팅 · paste-jd 튜토리얼</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="bar">
+    <span class="brand">paste<span class="dot">·</span>jd 튜토리얼</span>
+    <nav>
+      <a href="index.html">← 보드</a>
+      <a href="#session">세션 헬퍼</a>
+      <a href="#owner">소유자</a>
+      <a href="#gate">게이팅</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero">
+    <span class="issue-badge">Issue #7</span>
+    <span class="eyebrow" style="margin-left:8px">Milestone 2 · Auth</span>
+    <h1>뷰어 게이팅 — 본인만 실데이터</h1>
+    <p class="lede">서버에서 세션을 확인해, <code>gichanlee@icloud.com</code>으로 로그인했을 때만
+    본인 데이터를 보여줍니다. 그 외/비로그인은 John Doe 데모. 인증과 <b>인가</b>를 구분합니다.</p>
+  </section>
+
+  <div class="meta-grid">
+    <div class="meta-card"><h4>배우는 것</h4>
+      <p>재사용 세션 헬퍼 · allowlist 인가 · Server Component 조건부 렌더 · gitignore된 개인 데이터</p></div>
+    <div class="meta-card"><h4>완료 기준</h4>
+      <p>소유자로 로그인하면 대시보드에 “본인 데이터” 섹션, 아니면 John Doe만 보인다.</p></div>
+  </div>
+
+  <div class="code term"><div class="filename">터미널 · 이슈 + 브랜치</div><pre><code>gh issue create --title "#7 뷰어 게이팅 (소유자 allowlist)" --project "paste-jd SaaS" \
+  --body "서버 세션 확인 + 소유자만 실데이터. 인증/인가 구분."
+git switch main &amp;&amp; git pull &amp;&amp; git switch -c feat/7-viewer-gating</code></pre></div>
+
+  <h2 id="session">1. 재사용 세션 헬퍼</h2>
+  <p>#6의 <code>/me</code> 로직을 서버 컴포넌트 어디서나 쓸 수 있게 함수로 뺍니다.</p>
+  <div class="code"><div class="filename">web/src/lib/session.ts<span class="lang">typescript</span></div><pre><code>import { cookies } from "next/headers";
+import { db } from "@/lib/db";
+import { now, COOKIE_NAME } from "@/lib/auth";
+
+export type CurrentUser = { id: number; email: string; nickname: string };
+
+// 로그인 사용자 or null. Server Component / Route Handler 어디서나 호출.
+export async function getCurrentUser(): Promise&lt;CurrentUser | null&gt; {
+  const sid = (await cookies()).get(COOKIE_NAME)?.value;
+  if (!sid) return null;
+  const row = db.prepare(
+    `SELECT u.id, u.email, u.nickname, s.expires_at
+       FROM sessions s JOIN users u ON u.id = s.user_id
+      WHERE s.id = ?`
+  ).get(sid) as (CurrentUser &amp; { expires_at: number }) | undefined;
+  if (!row || row.expires_at &lt; now()) return null;
+  return { id: row.id, email: row.email, nickname: row.nickname };
+}</code></pre></div>
+  <div class="callout note"><span class="tag">리팩터링 팁</span>
+    <p>#6의 <code>/api/auth/me/route.ts</code>도 이 헬퍼를 쓰도록 고치면 중복이 사라집니다.
+    <code>const u = await getCurrentUser(); return u ? NextResponse.json(u) : NextResponse.json({error:"not signed in"},{status:401});</code></p></div>
+
+  <h2 id="owner">2. 소유자 allowlist</h2>
+  <div class="code"><div class="filename">web/src/lib/owner.ts<span class="lang">typescript</span></div><pre><code>// 이 이메일로 로그인한 사람만 "본인 데이터"를 본다.
+// 배포에선 env로 덮어쓸 수 있게 해 둔다.
+export const OWNER_EMAIL = (process.env.PASTE_JD_OWNER || "gichanlee@icloud.com").toLowerCase();
+
+export const isOwner = (email?: string | null) =&gt;
+  !!email &amp;&amp; email.toLowerCase() === OWNER_EMAIL;</code></pre></div>
+
+  <h2 id="data">3. 개인 데이터 자리 (gitignore)</h2>
+  <p>실데이터는 <b>public repo에 올리지 않습니다</b>. gitignore된 폴더에 두고, 배포 서버에는
+  나중에 <code>scp</code>로 옮깁니다(#10). 지금은 빈 폴더 + 안내만.</p>
+  <div class="code term"><div class="filename">터미널 · web/</div><pre><code>mkdir -p private/examples
+echo "private/" &gt;&gt; .gitignore
+# (선택) 로컬 테스트용으로 본인 데이터를 여기 복사해 둘 수 있음:
+# cp ~/workspace/chan_이력서_자기소개서_포트폴리오/03_output/*/resume_*.md web/private/examples/</code></pre></div>
+
+  <h2 id="gate">4. 대시보드에 게이팅 적용</h2>
+  <p><code>dashboard/page.tsx</code>를 서버에서 사용자 확인 후 분기하도록 고칩니다.</p>
+  <div class="code"><div class="filename">web/src/app/dashboard/page.tsx<span class="lang">tsx</span></div><pre><code>import Link from "next/link";
+import { DOCS } from "@/lib/documents";
+import { getCurrentUser } from "@/lib/session";
+import { isOwner } from "@/lib/owner";
+
+export default async function Dashboard() {
+  const user = await getCurrentUser();
+  const owner = isOwner(user?.email);
+
+  return (
+    &lt;main className="mx-auto max-w-3xl px-6 py-16"&gt;
+      &lt;h1 className="text-3xl font-bold"&gt;Dashboard&lt;/h1&gt;
+
+      {/* 누구의 데이터를 보는지 명확히 */}
+      &lt;div className="mt-3 inline-block rounded-full bg-neutral-100 px-3 py-1 text-sm
+                      dark:bg-neutral-800"&gt;
+        {owner ? `👤 ${user!.nickname} — 본인 데이터` : "🧪 John Doe — 공개 데모"}
+      &lt;/div&gt;
+
+      {/* 소유자 전용 섹션 */}
+      {owner ? (
+        &lt;section className="mt-8 rounded-xl border border-teal-500/40 bg-teal-500/10 p-5"&gt;
+          &lt;h2 className="font-semibold"&gt;본인 산출물&lt;/h2&gt;
+          &lt;p className="mt-1 text-sm text-neutral-600 dark:text-neutral-300"&gt;
+            실데이터는 서버의 개인 폴더에서 읽습니다(배포 후 scp로 이관 — #10).
+            지금은 자리만 마련돼 있습니다.
+          &lt;/p&gt;
+        &lt;/section&gt;
+      ) : (
+        &lt;p className="mt-6 text-sm text-neutral-500"&gt;
+          🔒 소유자 계정으로 로그인하면 본인 데이터가 보입니다. 아래는 공개 데모입니다.
+        &lt;/p&gt;
+      )}
+
+      {/* 데모 문서는 항상 표시 */}
+      &lt;div className="mt-8 grid gap-4 sm:grid-cols-2"&gt;
+        {DOCS.map((doc) =&gt; (
+          &lt;Link key={doc.slug} href={`/dashboard/${doc.slug}`}
+            className="rounded-xl border border-black/10 bg-white p-5 hover:border-teal-500
+                       dark:border-white/10 dark:bg-neutral-900"&gt;
+            &lt;h2 className="font-semibold"&gt;{doc.title}&lt;/h2&gt;
+            &lt;p className="mt-1 text-sm text-neutral-500"&gt;
+              {doc.fit.ok ? "✓ 한 페이지" : "⚠ 초과"} · {doc.fit.lines}/{doc.fit.budget}줄
+            &lt;/p&gt;
+          &lt;/Link&gt;
+        ))}
+      &lt;/div&gt;
+    &lt;/main&gt;
+  );
+}</code></pre></div>
+  <div class="callout why"><span class="tag">Why 서버에서 분기</span>
+    <p>이 페이지는 <code>async</code> Server Component라 <code>await getCurrentUser()</code>를 그대로 씁니다.
+    소유자가 아니면 소유자 섹션의 JSX 자체가 <b>생성되지 않아</b> 브라우저로 내려가지 않습니다.
+    “클라이언트에서 <code>display:none</code>으로 숨기기”와는 보안 수준이 다릅니다.</p></div>
+
+  <div class="callout note"><span class="tag">완전 보호 라우트가 필요하면</span>
+    <p>어떤 페이지를 <b>비로그인 시 아예 차단</b>하려면 서버 컴포넌트 맨 위에서
+    <code>if (!user) redirect("/")</code>(<code>next/navigation</code>의 <code>redirect</code>). 미들웨어(<code>middleware.ts</code>)로
+    경로 단위 보호도 가능하지만, 지금 규모엔 컴포넌트 내 체크로 충분합니다.</p></div>
+
+  <div class="callout learn"><span class="tag">🧩 Your turn</span>
+    <p><code>[doc]</code> 상세 페이지에도 소유자면 “본인 버전으로 보기” 토글을 붙여 보세요.
+    지금 배운 <code>getCurrentUser</code> + <code>isOwner</code>를 상세 페이지에서도 호출하면 됩니다.</p></div>
+
+  <h2>5. 테스트 &amp; PR</h2>
+  <p>소유자 이메일로 로그인 → 대시보드에 teal 소유자 섹션. 다른 이메일로 로그인 →
+  데모 안내만. 로그아웃 → 동일.</p>
+  <div class="code term"><div class="filename">터미널</div><pre><code>npm run dev   # 두 이메일로 각각 로그인해 차이 확인
+cd .. &amp;&amp; git add web
+git commit -m "feat: owner-gated viewer (#7)"
+git push -u origin feat/7-viewer-gating
+gh pr create --base main --title "feat: viewer gating (#7)" --body "Closes #7"</code></pre></div>
+
+  <ul class="check">
+    <li>소유자 로그인 시에만 “본인 데이터” 섹션이 보인다</li>
+    <li><code>private/</code>가 git에 안 올라간다</li>
+    <li>PR merge (카드 → Done). <b>Milestone 2 완료!</b></li>
+  </ul>
+
+  <div class="pager">
+    <a href="06-auth-ui.html"><span>이전</span><b>← #6 Auth UI</b></a>
+    <a class="next" href="08-docker-k8s.html"><span>다음</span><b>#8 Docker + k8s →</b></a>
+  </div>
+
+</div>
+<script src="copy.js"></script>
+</body>
+</html>

@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>#1 Scaffold &amp; 보드 셋업 · paste-jd 튜토리얼</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="bar">
+    <span class="brand">paste<span class="dot">·</span>jd 튜토리얼</span>
+    <nav>
+      <a href="index.html">← 보드</a>
+      <a href="#issue">이슈 만들기</a>
+      <a href="#scaffold">Next.js 생성</a>
+      <a href="#pr">PR</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero">
+    <span class="issue-badge">Issue #1</span>
+    <span class="eyebrow" style="margin-left:8px">Milestone 1 · Foundations</span>
+    <h1>Scaffold &amp; 보드 셋업</h1>
+    <p class="lede">GitHub Project 보드를 만들고, 첫 이슈를 생성하고, <code>web/</code>에 Next.js 앱을 스캐폴딩합니다.
+    이 페이지가 끝나면 <code>localhost:3000</code>에서 당신의 앱이 돕니다.</p>
+  </section>
+
+  <div class="meta-grid">
+    <div class="meta-card"><h4>배우는 것</h4>
+      <p>Next.js 프로젝트 구조 · npm · git 브랜치 · GitHub Issue/PR · Project 보드</p></div>
+    <div class="meta-card"><h4>완료 기준</h4>
+      <p><code>npm run dev</code>가 실행되고 브라우저에서 Next.js 기본 페이지가 보인다. PR이 올라간다.</p></div>
+  </div>
+
+  <div class="callout note"><span class="tag">이 페이지를 보는 법</span>
+    <p>단계마다 <b>왜 이 명령이어야만 하는지</b>를 짚는 <b>퀴즈</b>가 있습니다. 정답을 맞히는 게 목적이 아니라,
+    오답 선택지들을 읽으며 “아, 그래서 이거구나”를 느끼는 게 목적입니다. 맨 아래 체크리스트는 실제로
+    <b>클릭해서 체크</b>되고, 새로고침해도 진행 상태가 남습니다.</p></div>
+
+  <div class="diagram">
+    <pre class="mermaid">
+flowchart LR
+  I["📋 Issue #1<br/>작업을 작게 정의"]:::issue
+  I --> B["🌿 branch<br/>feat/1-scaffold"]:::branch
+  B --> C["💻 code<br/>create-next-app"]:::code
+  C --> K["✅ commit<br/>메시지에 (#1)"]:::commit
+  K --> P["🔀 PR<br/>본문에 Closes #1"]:::pr
+  P --> M["🎉 merge --squash<br/>→ main"]:::merge
+  M -.->|"이슈 자동 닫힘 · 카드 → Done"| I
+  classDef issue fill:#0e9a89,color:#fff,stroke:#0b7f70,stroke-width:2px
+  classDef branch fill:#3b82f6,color:#fff,stroke:#2563eb,stroke-width:2px
+  classDef code fill:#8b5cf6,color:#fff,stroke:#7c3aed,stroke-width:2px
+  classDef commit fill:#f59e0b,color:#141018,stroke:#d97706,stroke-width:2px
+  classDef pr fill:#ec4899,color:#fff,stroke:#db2777,stroke-width:2px
+  classDef merge fill:#e0442e,color:#fff,stroke:#c1351f,stroke-width:2px
+    </pre>
+    <span class="cap">이 한 바퀴가 이번 페이지의 전부입니다. 앞으로 9번 더 돕니다.</span>
+  </div>
+
+  <h2 id="issue">1. 이슈와 보드 만들기</h2>
+
+  <div class="step">
+    <div class="step-head"><span class="step-num">a</span><h3>gh CLI에 project 권한 추가</h3></div>
+    <p>GitHub Projects(v2)를 CLI로 다루려면 <code>project</code> 스코프가 필요합니다. 한 번만 하면 됩니다.</p>
+    <div class="code term"><div class="filename">터미널</div><pre><code>gh auth status
+gh auth refresh -s project,read:project</code></pre></div>
+    <div class="callout note"><span class="tag">확인</span>
+      <p><code>gh auth status</code>가 로그인 계정(<code>bookseal</code>)을 보여줘야 합니다. 아니면 <code>gh auth login</code> 먼저.</p></div>
+
+    <div class="callout learn"><span class="tag">이 명령이 뭐 하는 걸까</span>
+      <p><code>gh auth refresh</code>는 <b>이미 로그인된</b> 토큰을 새로 발급받는 명령입니다(다시 로그인 X).
+      <code>-s</code>는 <code>--scopes</code>의 축약으로, 토큰에 <b>권한을 더 붙입니다</b>.
+      <code>project</code>는 GitHub Projects 읽기+쓰기, <code>read:project</code>는 읽기 전용 권한이에요.
+      기본 <code>gh auth login</code> 토큰에는 이 스코프가 <b>없어서</b>, 그대로 <code>gh project list</code>를 치면
+      “read:project 스코프가 없다”는 에러가 납니다. 한 번 승인해 두면 계속 저장됩니다.</p></div>
+
+    <div class="quiz">
+      <div class="q-tag">🧠 왜 이 명령일까</div>
+      <div class="q"><code>gh auth login</code>으로 이미 로그인했는데, 왜 <code>gh auth refresh -s project</code>를 또 해야 할까요?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" data-correct="true"><span class="mark">A</span><span>기본 로그인 토큰에는 <code>project</code> 스코프가 빠져 있어서, 그게 없으면 <code>gh project</code> 명령이 권한 에러로 거부되기 때문.</span></button>
+        <button class="quiz-opt"><span class="mark">B</span><span>토큰이 24시간마다 만료돼서 매번 새로 발급받아야 하기 때문.</span></button>
+        <button class="quiz-opt"><span class="mark">C</span><span><code>gh project</code>는 로그인과 완전히 별개라, 아예 다른 계정으로 다시 인증해야 하기 때문.</span></button>
+      </div>
+      <div class="quiz-explain"><b>핵심:</b> GitHub 토큰은 “무엇을 할 수 있는가(스코프)”가 처음 발급 때 정해집니다.
+      로그인 자체는 됐지만 <b>권한 범위가 좁아서</b> Projects를 못 건드리는 상태죠. <code>refresh -s</code>는
+      로그인을 갈아엎지 않고 <b>이 토큰에 권한만 추가</b>하는 최소 조치라, 이게 “될 수밖에 없는” 명령입니다.</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-num">b</span><h3>Project 보드 생성</h3></div>
+    <div class="code term"><div class="filename">터미널</div><pre><code>gh project create --owner "@me" --title "paste-jd SaaS"
+gh project list --owner "@me"</code></pre></div>
+    <p><code>list</code>에 나온 <b>번호</b>를 기억해 두세요(예: <code>3</code>). 보드는 웹에서
+    <span class="kbd">github.com/users/bookseal/projects</span> 로도 열립니다. 기본 컬럼(Todo / In Progress / Done)에
+    필요하면 웹 UI에서 <b>In Review</b> 컬럼을 하나 추가하세요.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-num">c</span><h3>이슈 #1 생성 (보드에 자동 등록)</h3></div>
+    <p><code>--project</code> 플래그로 <b>생성과 동시에</b> 보드에 카드가 꽂힙니다.</p>
+    <div class="code term"><div class="filename">터미널 · resume-pipeline 저장소 루트에서</div><pre><code>gh issue create \
+  --title "#1 Scaffold: web/ Next.js 앱 + 보드 셋업" \
+  --project "paste-jd SaaS" \
+  --body "web/ 디렉토리에 create-next-app(TS·App Router·Tailwind)로 Next.js 스캐폴딩.
+로컬 dev 서버 확인. 이후 모든 이슈의 베이스가 됨."</code></pre></div>
+    <div class="callout why"><span class="tag">Why 이슈부터</span>
+      <p>코드보다 이슈를 먼저 만드는 습관은, 작업을 <b>작게 정의</b>하고 나중에
+      “왜 이렇게 했나”를 추적 가능하게 만듭니다. 포트폴리오에서 이 흔적이 곧 실력의 증거가 됩니다.</p></div>
+  </div>
+
+  <h2 id="scaffold">2. Next.js 앱 스캐폴딩</h2>
+
+  <div class="step">
+    <div class="step-head"><span class="step-num">a</span><h3>브랜치 파기</h3></div>
+    <p>작업은 항상 <code>main</code>이 아닌 브랜치에서. 카드를 보드에서 <b>In Progress</b>로 옮기세요.</p>
+    <div class="code term"><div class="filename">터미널 · 저장소 루트</div><pre><code>git switch main
+git pull
+git switch -c feat/1-scaffold</code></pre></div>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-num">b</span><h3>create-next-app 실행</h3></div>
+    <p>저장소 루트에서 실행하면 <code>web/</code> 하위에 앱이 생성됩니다. 이미 git 저장소 안이라
+    create-next-app은 새 git init을 건너뜁니다(정상).</p>
+    <div class="code term"><div class="filename">터미널 · 저장소 루트</div><pre><code>npx create-next-app@latest web \
+  --typescript \
+  --tailwind \
+  --app \
+  --src-dir \
+  --eslint \
+  --import-alias "@/*" \
+  --use-npm \
+  --no-turbopack</code></pre></div>
+    <div class="callout learn"><span class="tag">각 플래그 의미</span>
+      <p><code>--typescript</code> 타입 안전 · <code>--tailwind</code> 유틸리티 CSS ·
+      <code>--app</code> App Router(최신 방식) · <code>--src-dir</code> 소스를 <code>src/</code>로 모음 ·
+      <code>--import-alias "@/*"</code> <code>@/components/…</code>처럼 절대경로 import ·
+      <code>--no-turbopack</code> 초심자용으로 안정적인 webpack dev.
+      대화형 질문을 모두 플래그로 미리 답해서 자동 진행됩니다.</p></div>
+
+    <div class="callout learn"><span class="tag">npx · npm · turbopack — 용어 정리</span>
+      <p><b>npm</b> = Node <u>P</u>ackage <u>M</u>anager. 라이브러리를 설치·버전관리하고
+      <code>npm run dev</code> 같은 스크립트를 돌리는 “관리자”.
+      <b>npx</b> = Node <u>P</u>ackage e<u>X</u>ecute. 패키지를 <b>전역 설치 없이 한 번만 실행</b>하는 “실행기”.
+      <code>create-next-app</code> 같은 <b>1회성 생성기</b>에 딱 맞습니다 — 프로젝트 만들고 나면 다시 쓸 일이 없으니까요.
+      <b>Turbopack</b>은 Vercel이 만든 Rust 기반 최신 번들러(dev 서버를 빠르게)지만, 아직 환경에 따라
+      에지 케이스가 있어 초심자 튜토리얼에선 검증된 webpack 경로로 고정합니다.</p></div>
+
+    <div class="quiz">
+      <div class="q-tag">🧠 왜 npx일까</div>
+      <div class="q">왜 <code>npm install -g create-next-app</code>으로 깔지 않고 <code>npx create-next-app</code>으로 실행할까요?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" data-correct="true"><span class="mark">A</span><span>생성기는 프로젝트를 한 번 만들면 끝이라, 전역에 설치해 두면 낡은 버전만 쌓입니다. <code>npx</code>는 <b>그때그때 최신을 받아 1회 실행</b>하고 남기지 않죠.</span></button>
+        <button class="quiz-opt"><span class="mark">B</span><span><code>npx</code>가 <code>npm install</code>보다 항상 빠르기 때문에 모든 설치를 npx로 하는 게 맞습니다.</span></button>
+        <button class="quiz-opt"><span class="mark">C</span><span><code>create-next-app</code>은 <code>npm</code>으로는 설치할 수 없고 <code>npx</code> 전용 패키지이기 때문.</span></button>
+      </div>
+      <div class="quiz-explain"><b>핵심:</b> <code>@latest</code>가 붙은 이유와도 이어집니다. 생성기는 <b>일회용 도구</b>예요.
+      전역 설치는 “한 번 쓰고 안 쓸 칼을 계속 서랍에 두는” 것과 같습니다. <code>npx</code>는 필요할 때 꺼내
+      최신으로 쓰고 치우니, 버전이 낡을 걱정이 없습니다.</div>
+    </div>
+
+    <div class="quiz">
+      <div class="q-tag">🧠 왜 옵션을 다 붙일까</div>
+      <div class="q">옵션 없이 <code>npx create-next-app@latest web</code>만 쳐도 앱은 만들어집니다. 그런데도 <code>--typescript --tailwind --app …</code>을 다 붙이는 진짜 이유는?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt"><span class="mark">A</span><span>옵션을 안 붙이면 앱이 아예 생성되지 않고 에러가 나기 때문.</span></button>
+        <button class="quiz-opt" data-correct="true"><span class="mark">B</span><span>각 옵션은 <b>대화형 질문에 미리 답</b>해 두는 것 — 여러 사람이 따라 해도 <b>똑같은 구조</b>가 나오게 하고, 자동으로 끝까지 진행되게 합니다.</span></button>
+        <button class="quiz-opt"><span class="mark">C</span><span>플래그가 많을수록 앱 실행 속도가 빨라지기 때문.</span></button>
+      </div>
+      <div class="quiz-explain"><b>핵심:</b> 옵션이 없으면 <code>create-next-app</code>은 “TypeScript 쓸래? Tailwind 쓸래?”를
+      <b>하나씩 물어봅니다</b>. 튜토리얼은 그 답을 <b>미리 다 정해</b> 둔 거예요. 그래서 누가 따라 하든 결과가
+      동일하고 — 재현 가능성 — 스크립트에 넣어 자동화하기도 좋습니다.</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-num">c</span><h3>생성된 구조 살펴보기</h3></div>
+    <div class="code"><div class="filename">web/ 주요 구조<span class="lang">tree</span></div><pre><code>web/
+├── package.json          # 의존성 + 스크립트(dev/build/start)
+├── next.config.ts        # Next.js 설정
+├── tsconfig.json         # TypeScript 설정 (@/* alias 여기 있음)
+├── postcss.config.mjs    # Tailwind 파이프라인
+└── src/
+    └── app/
+        ├── layout.tsx    # 모든 페이지를 감싸는 최상위 레이아웃(html/body)
+        ├── page.tsx      # "/" 경로 = 홈 페이지
+        └── globals.css   # 전역 스타일 + Tailwind 지시문</code></pre></div>
+    <div class="callout note"><span class="tag">App Router 핵심</span>
+      <p><code>src/app/</code> 안의 <b>폴더 이름이 곧 URL 경로</b>이고, 그 폴더의 <code>page.tsx</code>가
+      그 경로의 화면입니다. 예: <code>src/app/cookbook/page.tsx</code> → <code>/cookbook</code>.
+      #3에서 이걸 직접 씁니다.</p></div>
+
+    <div class="diagram">
+      <pre class="mermaid">
+flowchart LR
+  subgraph FS["📁 src/app/ · 파일시스템"]
+    direction TB
+    a1["page.tsx"]:::f
+    a2["cookbook/page.tsx"]:::f
+    a3["dashboard/page.tsx"]:::f
+  end
+  subgraph U["🌐 브라우저 URL"]
+    direction TB
+    b1["/"]:::u
+    b2["/cookbook"]:::u
+    b3["/dashboard"]:::u
+  end
+  a1 ==> b1
+  a2 ==> b2
+  a3 ==> b3
+  classDef f fill:#8b5cf6,color:#fff,stroke:#7c3aed,stroke-width:2px
+  classDef u fill:#0e9a89,color:#fff,stroke:#0b7f70,stroke-width:2px
+      </pre>
+      <span class="cap">라우팅 테이블을 코드로 쓰는 대신, <b>폴더를 만드는 것</b>이 곧 라우트를 만드는 것.</span>
+    </div>
+
+    <div class="callout learn"><span class="tag">곁가지: <code>@/</code> 절대경로와 “linter”라는 이름</span>
+      <p><b><code>--import-alias "@/*"</code></b> — 프로젝트가 커지면 <code>import Button from "../../../components/Button"</code>
+      같은 상대경로 지옥이 옵니다. <code>@/</code>를 <b>항상 <code>src/</code> 루트</b>로 매핑해 두면
+      파일을 어디로 옮겨도 <code>@/components/Button</code>은 안 깨집니다(설정은 <code>tsconfig.json</code>에 저장).
+      C의 <code>-Iinclude</code>로 include 루트를 잡는 것과 같은 발상이에요.</p>
+      <p style="margin-bottom:0"><b><code>--eslint</code> / linter의 어원</b> — <b>lint</b>는 원래 “옷의 보풀”. 1978년 Bell Labs에서
+      C 코드의 잠재 버그를 걸러내려고 만든 유닉스 도구 이름이 <code>lint</code>였고, “코드의 보풀을 털어낸다”는
+      비유였습니다. ESLint는 그 계보의 JS/TS판 — <code>-Wall -Wextra</code>를 팀 규칙까지 얹어 훨씬 빡세게 돌리는 별도 도구라고 보면 됩니다.</p></div>
+
+    <div class="quiz">
+      <div class="q-tag">🧠 폴더=라우트 감각</div>
+      <div class="q"><code>src/app/dashboard/settings/page.tsx</code> 파일을 만들었습니다. 이 화면은 어떤 URL에서 열릴까요?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt"><span class="mark">A</span><span><code>/page</code> — 파일 이름이 <code>page</code>라서.</span></button>
+        <button class="quiz-opt" data-correct="true"><span class="mark">B</span><span><code>/dashboard/settings</code> — <code>app/</code> 아래 <b>폴더 경로</b>가 그대로 URL이 되고, <code>page.tsx</code>는 “이 폴더의 화면”이라는 표식이라서.</span></button>
+        <button class="quiz-opt"><span class="mark">C</span><span><code>/settings</code> — 가장 안쪽 폴더 하나만 URL이 됩니다.</span></button>
+      </div>
+      <div class="quiz-explain"><b>핵심:</b> <code>page.tsx</code>는 URL에 <b>들어가지 않는</b> 예약된 파일명 — “여기가 렌더링할 페이지다”라는 신호일 뿐입니다.
+      URL을 만드는 건 <b>폴더 계층 전체</b>죠. 그래서 라우팅을 바꾸려면 코드가 아니라 <b>폴더를 옮기면</b> 됩니다.
+      이게 “파일시스템 기반 라우터”가 될 수밖에 없는 이유입니다.</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-num">d</span><h3>dev 서버 실행 → 눈으로 확인</h3></div>
+    <div class="code term"><div class="filename">터미널</div><pre><code>cd web
+npm run dev</code></pre></div>
+    <p>브라우저에서 <a href="http://localhost:3000" target="_blank">http://localhost:3000</a> 를 엽니다.
+    Next.js 기본 페이지가 보이면 성공입니다. 종료는 <span class="kbd">Ctrl</span>+<span class="kbd">C</span>.</p>
+    <div class="callout warn"><span class="tag">첫 실행 트러블슈팅</span>
+      <p><b>포트 사용 중</b>이면 <code>npm run dev -- -p 3001</code>. <b>node 버전</b> 문제면
+      <code>node -v</code>가 20 이상인지 확인하세요.</p></div>
+  </div>
+
+  <h2 id="warmup">3. (워밍업) workspace INDEX.md</h2>
+  <p>선택 단계지만 좋은 준비운동입니다. 당신의 <code>~/workspace</code> 전체를 한눈에 보는 인덱스를
+  만들어 두면, 이 SaaS가 어떤 자산들 위에 서 있는지 스스로 정리됩니다. 아래를
+  <code>~/workspace/INDEX.md</code>로 저장하세요(이 저장소와는 별개 개인 파일).</p>
+  <div class="code"><div class="filename">~/workspace/INDEX.md<span class="lang">markdown</span></div><pre><code># ~/workspace INDEX
+
+| 프로젝트 | 스택 | 설명 |
+|---|---|---|
+| resume-pipeline | Python (python-docx) | 채용지원을 "변환 파이프라인"으로 보는 도구 + skill (이 SaaS의 엔진) |
+| physical-spark | FastAPI + static + k8s | Physical AI 피어리뷰 스쿨. 매직링크 auth의 원천 |
+| bit-habit-infra | k3s · Traefik · cert-manager | *.bit-habit.com 전체를 굴리는 IaC (배포 대상 인프라) |
+| chan_이력서_자기소개서_포트폴리오 | Python + docs | resume-pipeline의 비공개 실데이터 companion |
+| mentoring | FastAPI + SQLite + k8s | 오프라인 멘토링용 웹앱 |
+| llm-app-lab | FastAPI + static + k3s | "Building with LLMs" 인터랙티브 코스 |
+| Booktoss | Streamlit + Upstage Solar | 100+ 서울 도서관 동시 검색 AI 에이전트 |
+| lerobot | PyTorch (fork) | HuggingFace LeRobot 로보틱스 ML |
+| bookseal | Markdown | GitHub 프로필 README |
+</code></pre></div>
+
+  <h2 id="pr">4. 커밋 &amp; PR</h2>
+
+  <div class="step">
+    <div class="step-head"><span class="step-num">a</span><h3>커밋</h3></div>
+    <div class="code term"><div class="filename">터미널 · 저장소 루트</div><pre><code>cd ..
+git add web
+git commit -m "feat: scaffold Next.js app in web/ (#1)"</code></pre></div>
+
+    <div class="callout learn"><span class="tag"><code>(#1)</code>은 무슨 마법일까 — 사실 마법 아님</span>
+      <p>Git 입장에서 <code>(#1)</code>은 그냥 <b>메시지 속 글자</b>일 뿐, 특별 처리는 없습니다.
+      다만 GitHub UI가 메시지의 <code>#숫자</code>를 이슈/PR로 <b>링크</b>해 줘서, 나중에 “이 커밋이 왜 생겼지?”를 클릭 한 번으로 추적합니다.
+      <b>이슈를 자동으로 닫는 건 전혀 다른 문법</b>이에요 — PR 본문의 <code>Closes #1</code> / <code>Fixes #1</code>
+      같은 키워드가 있어야 merge 시 이슈가 닫히고 보드 카드가 Done으로 갑니다.</p></div>
+
+    <div class="quiz">
+      <div class="q-tag">🧠 링크 vs 자동 닫기</div>
+      <div class="q">이 커밋 메시지의 <code>(#1)</code>은 merge될 때 이슈 #1을 자동으로 <b>닫아줄까요?</b></div>
+      <div class="quiz-opts">
+        <button class="quiz-opt"><span class="mark">A</span><span>네. <code>#1</code>이 들어간 커밋이 main에 들어오면 GitHub가 이슈를 닫습니다.</span></button>
+        <button class="quiz-opt" data-correct="true"><span class="mark">B</span><span>아니요. <code>(#1)</code>은 <b>링크만</b> 걸립니다. 자동으로 닫으려면 <code>Closes #1</code> 같은 <b>키워드</b>가 필요합니다.</span></button>
+        <button class="quiz-opt"><span class="mark">C</span><span>Git이 로컬 커밋 시점에 이미 이슈를 닫습니다.</span></button>
+      </div>
+      <div class="quiz-explain"><b>핵심:</b> <code>#1</code>은 <b>사람과 UI를 위한 참조 표식</b>(추적용), <code>Closes #1</code>은
+      <b>GitHub에게 내리는 명령</b>(lifecycle 연결)입니다. 둘을 구분해야, 왜 커밋엔 <code>(#1)</code>을,
+      PR 본문엔 <code>Closes #1</code>을 따로 쓰는지가 납득됩니다. 이름만 비슷할 뿐 하는 일이 다릅니다.</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-num">b</span><h3>푸시 &amp; PR 생성</h3></div>
+    <p>PR 본문에 <code>Closes #1</code>을 넣으면, merge 시 이슈가 닫히며 보드 카드가 자동으로
+    <b>Done</b>으로 이동합니다.</p>
+    <div class="code term"><div class="filename">터미널</div><pre><code>git push -u origin feat/1-scaffold
+gh pr create --base main --title "feat: scaffold Next.js app (#1)" \
+  --body "Closes #1
+
+- web/ 에 create-next-app(TS·App Router·Tailwind)
+- npm run dev 로컬 확인 완료"</code></pre></div>
+
+    <div class="callout learn"><span class="tag"><code>--base</code>는 “어디로 합쳐달라”인가</span>
+      <p><b>base</b> = 변경이 <b>흡수될 쪽</b>(merge 대상), <b>head</b> = 변경이 <b>들어있는 쪽</b>(지금 작업 브랜치).
+      그래서 <code>--base main</code>은 “<code>feat/1-scaffold</code> → <code>main</code>으로 가는 PR”이라는 선언입니다.
+      팀에서 Git-flow를 쓰면 <code>--base develop</code>으로 바꿔 기능들을 먼저 develop에 모으고,
+      나중에 develop → main 릴리스 PR을 따로 냅니다. 개인 프로젝트는 보통 main 하나로 충분합니다.</p></div>
+
+    <div class="diagram">
+      <pre class="mermaid">
+%%{init: {"gitGraph": {"mainBranchName": "main"}} }%%
+gitGraph
+   commit id: "이전 작업"
+   branch feat/1-scaffold
+   checkout feat/1-scaffold
+   commit id: "scaffold (#1)"
+   checkout main
+   merge feat/1-scaffold tag: "PR: base=main"
+      </pre>
+      <span class="cap">head(<code>feat/1-scaffold</code>)의 변경이 base(<code>main</code>)로 흘러 들어갑니다. base를 <code>develop</code>으로 바꾸면 합류 지점만 달라질 뿐 그림은 같아요.</span>
+    </div>
+
+    <div class="quiz">
+      <div class="q-tag">🧠 base의 의미</div>
+      <div class="q">어느 날 <code>gh pr create --base develop</code>로 바꿔 실행했습니다. 무엇이 달라질까요?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt"><span class="mark">A</span><span>내 작업 브랜치가 <code>develop</code>이라는 이름으로 바뀝니다.</span></button>
+        <button class="quiz-opt" data-correct="true"><span class="mark">B</span><span>내 변경(head)이 <code>main</code> 대신 <b><code>develop</code> 브랜치로 합쳐지도록</b> 요청됩니다. 합류 대상만 달라집니다.</span></button>
+        <button class="quiz-opt"><span class="mark">C</span><span>PR이 <code>main</code>과 <code>develop</code> 양쪽에 동시에 머지됩니다.</span></button>
+      </div>
+      <div class="quiz-explain"><b>핵심:</b> PR은 언제나 <b>head → base</b> 한 방향입니다. head는 “내가 지금 선 브랜치”로 자동 결정되고,
+      <code>--base</code>만 “받는 쪽”을 고릅니다. 그래서 브랜치 전략(main 단일 / develop 분리)이 바뀌어도
+      바꿀 건 <code>--base</code> 값 하나뿐 — 이게 base라는 옵션이 존재하는 이유입니다.</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-num">c</span><h3>리뷰 &amp; merge</h3></div>
+    <p>보드에서 카드를 <b>In Review</b>로 옮깁니다. Claude Code와 함께 diff를 살펴본 뒤,
+    문제없으면 merge하세요.</p>
+    <div class="code term"><div class="filename">터미널</div><pre><code>gh pr merge --squash --delete-branch</code></pre></div>
+  </div>
+
+  <h2>완료 체크리스트</h2>
+  <p>클릭해서 체크하세요. 진행 상태는 이 브라우저에 저장돼 새로고침해도 남습니다.</p>
+  <ul class="tasklist">
+    <li><input type="checkbox"><span class="label">Project 보드가 생성됐고 <b>#1 카드</b>가 보인다</span></li>
+    <li><input type="checkbox"><span class="label"><code>gh</code> 토큰에 <code>project</code> 스코프를 추가했다</span></li>
+    <li><input type="checkbox"><span class="label"><code>web/</code>에 Next.js 앱이 있고 <code>npm run dev</code>가 뜬다</span></li>
+    <li><input type="checkbox"><span class="label"><code>http://localhost:3000</code>에서 기본 페이지를 눈으로 확인했다</span></li>
+    <li><input type="checkbox"><span class="label"><code>feat/1-scaffold</code> 브랜치에서 커밋하고 push했다</span></li>
+    <li><input type="checkbox"><span class="label">PR을 올리고(<code>Closes #1</code>) merge했다 (카드 → Done)</span></li>
+  </ul>
+
+  <div class="callout learn"><span class="tag">이번에 얻은 감각</span>
+    <p>“이슈 → 브랜치 → 코드 → PR → merge” 한 바퀴를 돌았습니다. 앞으로 9번 더 반복합니다.
+    반복이 지루해질 때쯤, 이 루프가 몸에 붙어 있을 겁니다 — 그게 실무 개발의 기본기입니다.</p></div>
+
+  <div class="pager">
+    <a href="index.html"><span>이전</span><b>← 보드 허브</b></a>
+    <a class="next" href="02-landing.html"><span>다음</span><b>#2 랜딩 페이지 →</b></a>
+  </div>
+
+</div>
+<script type="module">
+  // Mermaid renders the .mermaid blocks at load. Loaded from a CDN, so
+  // the diagrams need internet on first view; everything else works offline.
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: dark ? 'dark' : 'base',
+    themeVariables: { fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace', fontSize: '14px' }
+  });
+</script>
+<script src="copy.js"></script>
+<script src="quiz.js"></script>
+</body>
+</html>
