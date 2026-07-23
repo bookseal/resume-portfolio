@@ -91,9 +91,9 @@
 
 ## 학력 / 교육
 
-- **École 42 Seoul** — 컴퓨터 사이언스 (2022–2024)
+- **École 42 (Seoul)** — 컴퓨터 사이언스 (2022–2024)
 - **부경대학교** — 산업공학 학사 (2007–2014)
-- **Fast Campus × Upstage AI Lab** 수료 · École 42 Seoul 스터디 3년 운영 (동료 1명 Upstage AI Research Engineer 인턴 배출)
+- **Fast Campus × Upstage AI Lab** 수료 · École 42 (Seoul) 스터디 3년 운영 (동료 1명 Upstage AI Research Engineer 인턴 배출)
 
 ---
 

@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>#3 Cookbook · paste-jd 튜토리얼</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="bar">
+    <span class="brand">paste<span class="dot">·</span>jd 튜토리얼</span>
+    <nav>
+      <a href="index.html">← 보드</a>
+      <a href="#install">설치</a>
+      <a href="#content">내용</a>
+      <a href="#route">라우트</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero">
+    <span class="issue-badge">Issue #3</span>
+    <span class="eyebrow" style="margin-left:8px">Milestone 1 · Foundations</span>
+    <h1>Cookbook — 어떻게 동작하나</h1>
+    <p class="lede"><code>/cookbook</code> 경로를 새로 만들고, 이 서비스의 실제 9단계 파이프라인을
+    마크다운으로 렌더합니다. 중첩 라우트와 <code>react-markdown</code>을 배웁니다.</p>
+  </section>
+
+  <div class="meta-grid">
+    <div class="meta-card"><h4>배우는 것</h4>
+      <p>중첩 라우트(폴더=URL) · npm 패키지 설치 · <code>react-markdown</code> · Server Component</p></div>
+    <div class="meta-card"><h4>완료 기준</h4>
+      <p><code>/cookbook</code>에 9단계 설명이 서식 있는 문서로 보인다.</p></div>
+  </div>
+
+  <div class="code term"><div class="filename">터미널 · 이슈 + 브랜치</div><pre><code>gh issue create --title "#3 Cookbook 페이지" --project "paste-jd SaaS" \
+  --body "9단계 파이프라인을 마크다운으로 렌더. 중첩 라우트/react-markdown 학습."
+git switch main &amp;&amp; git pull &amp;&amp; git switch -c feat/3-cookbook</code></pre></div>
+
+  <h2 id="install">1. 마크다운 렌더러 설치</h2>
+  <div class="code term"><div class="filename">터미널 · web/ 안에서</div><pre><code>cd web
+npm install react-markdown remark-gfm</code></pre></div>
+  <div class="callout learn"><span class="tag">패키지 2개의 역할</span>
+    <p><code>react-markdown</code>: 마크다운 문자열을 React 요소로 변환. <code>remark-gfm</code>: 표·체크박스 등
+    GitHub 스타일 마크다운(GFM) 지원 플러그인.</p></div>
+
+  <h2 id="content">2. 콘텐츠를 문자열 모듈로</h2>
+  <p>실제 <code>skill/SKILL.md</code>의 9단계를 요약한 내용입니다. <code>.ts</code> 모듈에 문자열로 두면
+  빌드에 자동 포함되어 배포에서도 안전합니다.</p>
+  <div class="code"><div class="filename">web/src/content/cookbook.ts<span class="lang">typescript</span></div><pre><code>export const COOKBOOK = `
+# paste-jd Cookbook
+
+채용지원을 **변환 파이프라인**으로 다룹니다.
+공유 재료(경력·프로젝트·글)를 회사별 JD라는 *함수*에 통과시켜,
+한 장짜리 맞춤 이력서를 재현 가능하게 만듭니다.
+
+## 파이프라인 9단계
+
+| # | 단계 | 하는 일 |
+|---|------|--------|
+| 0 | 입력 확인 | JD에서 회사/역할/식별자 도출 |
+| 1 | JD 보존 | 원문 JD를 그대로 저장 |
+| 2 | 자산 로드 | history·assets·과거 제출물 재사용 |
+| 3 | 이력서 작성 | resume 마크다운 초안 |
+| 4 | 자소서 작성 | coverletter 마크다운 초안 |
+| 5 | 사실 검증 | 이전 회사명 제거·주장한 스택 확인 |
+| 6 | docx 빌드 | 템플릿에 채워 넣고 한 페이지 fit 체크 |
+| 7 | 핸드오프 | 포트폴리오 링크·한 장 체크리스트 |
+| 8 | 제출 후 | drafts→submitted 이동·기록 갱신 |
+
+## 설계 원칙
+
+- **변하는 것은 데이터로**: 문구는 마크다운, 서식은 .docx 템플릿, 스타일 매핑은 템플릿에서 추론.
+- **줄(line)이 예산**: 한 페이지 ≈ 55줄. 세 줄짜리 불릿은 한 줄의 3배 비용.
+- **바이트를 검증**: 렌더가 아니라 .docx 내부 XML을 직접 확인해 링크 누수를 잡음.
+- **사실 우선**: 요약은 JD 필수 역량과 1:1로 매핑. 없는 경험은 쓰지 않음.
+`;
+</code></pre></div>
+  <div class="callout note"><span class="tag">문법 주의</span>
+    <p>백틱(<code>\`</code>)으로 감싼 <b>템플릿 리터럴</b>이라 여러 줄 문자열이 됩니다. 내용 안에 백틱이나
+    <code>${}</code>가 들어가면 이스케이프가 필요하니, 지금은 넣지 마세요.</p></div>
+
+  <h2 id="route">3. /cookbook 라우트 만들기</h2>
+  <p><code>src/app/</code> 밑에 <code>cookbook</code> 폴더를 만들고 그 안에 <code>page.tsx</code>를 두면
+  <code>/cookbook</code> 경로가 생깁니다.</p>
+  <div class="code term"><div class="filename">터미널 · web/ 안에서</div><pre><code>mkdir -p src/app/cookbook</code></pre></div>
+  <div class="code"><div class="filename">web/src/app/cookbook/page.tsx<span class="lang">tsx</span></div><pre><code>import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { COOKBOOK } from "@/content/cookbook";
+
+export default function CookbookPage() {
+  return (
+    &lt;main className="mx-auto max-w-3xl px-6 py-16"&gt;
+      {/* prose 유틸이 없어도 최소 서식을 위해 간단한 래퍼 클래스 사용 */}
+      &lt;article className="cookbook"&gt;
+        &lt;Markdown remarkPlugins={[remarkGfm]}&gt;{COOKBOOK}&lt;/Markdown&gt;
+      &lt;/article&gt;
+    &lt;/main&gt;
+  );
+}</code></pre></div>
+
+  <div class="step">
+    <div class="step-head"><span class="step-num">+</span><h3>마크다운에 최소 서식 입히기</h3></div>
+    <p>react-markdown은 순수 태그(<code>&lt;h1&gt;&lt;table&gt;…</code>)만 뱉습니다. <code>globals.css</code> 맨 아래에
+    몇 줄 추가해 보기 좋게 만듭니다.</p>
+    <div class="code"><div class="filename">web/src/app/globals.css<span class="lang">css</span> (파일 끝에 추가)</div><pre><code>.cookbook h1 { font-size: 2rem; font-weight: 700; margin: 0 0 1rem; }
+.cookbook h2 { font-size: 1.3rem; font-weight: 600; margin: 2rem 0 .5rem; }
+.cookbook p, .cookbook li { line-height: 1.7; margin: .5rem 0; }
+.cookbook ul { list-style: disc; padding-left: 1.4rem; }
+.cookbook table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+.cookbook th, .cookbook td { border: 1px solid #ccc; padding: .4rem .7rem; text-align: left; }
+.cookbook th { background: rgba(0,0,0,.04); }</code></pre></div>
+  </div>
+
+  <div class="callout why"><span class="tag">Why Server Component 그대로 두나</span>
+    <p>이 페이지엔 <code>"use client"</code>가 없습니다 = 기본값인 <b>Server Component</b>. 마크다운을
+    서버에서 HTML로 변환해 보내므로, 브라우저로 내려가는 JS가 줄어 더 빠릅니다.
+    클릭·상태가 필요한 화면에서만 client로 바꿉니다(#6에서 처음 등장).</p></div>
+
+  <div class="callout learn"><span class="tag">🧩 Your turn (심화 · 선택)</span>
+    <p>지금은 요약 문자열을 렌더합니다. <b>도전</b>: 진짜 <code>skill/SKILL.md</code> 파일을 읽어 렌더해 보세요.
+    Server Component에서 <code>import fs from "node:fs"; import path from "node:path";</code> 후
+    <code>fs.readFileSync(path.join(process.cwd(), "..", "skill", "SKILL.md"), "utf8")</code>.
+    dev에선 잘 되지만 <b>배포(standalone)에선 파일이 안 딸려갑니다</b> — 그 문제를 #8에서 어떻게 푸는지
+    미리 고민해 보는 게 이 도전의 목적입니다.</p></div>
+
+  <h2>4. 확인 &amp; PR</h2>
+  <div class="code term"><div class="filename">터미널</div><pre><code>npm run dev        # localhost:3000/cookbook 확인
+cd .. &amp;&amp; git add web
+git commit -m "feat: cookbook page rendering pipeline steps (#3)"
+git push -u origin feat/3-cookbook
+gh pr create --base main --title "feat: cookbook (#3)" --body "Closes #3"</code></pre></div>
+
+  <ul class="check">
+    <li><code>/cookbook</code>에 표와 목록이 서식 있게 보인다</li>
+    <li>랜딩의 “어떻게 동작하나” 버튼이 여기로 연결된다</li>
+    <li>PR merge (카드 → Done)</li>
+  </ul>
+
+  <div class="pager">
+    <a href="02-landing.html"><span>이전</span><b>← #2 랜딩</b></a>
+    <a class="next" href="04-dashboard.html"><span>다음</span><b>#4 Dashboard 뷰어 →</b></a>
+  </div>
+
+</div>
+<script src="copy.js"></script>
+</body>
+</html>
