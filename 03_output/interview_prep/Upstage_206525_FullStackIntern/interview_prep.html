@@ -74,7 +74,9 @@
   <a href="#lens">⑤ JD 문장별 해설 (미국 문화 렌즈)</a>
   <a href="#interview">⑥ 인터뷰 대비</a>
   <a href="#hard">⑦ 예상 곤란 질문</a>
-  <a href="#story">⑧ 나의 한 줄 스토리</a>
+  <a href="#aitools">⑧ AI 도구 답변 (핵심)</a>
+  <a href="#warmup">⑨ 프론트 손풀기 (fetch→map)</a>
+  <a href="#story">⑩ 나의 한 줄 스토리</a>
 </div>
 
 <!-- ============ 1. EMAIL ============ -->
@@ -336,8 +338,133 @@ AI 도구로 학습·구현 속도를 끌어올리는 게 제 방식입니다."<
   Claude Code로 스캐폴딩하고 왜 그렇게 짰는지 이해하며 갑니다. 손으로 짤 줄 알되, AI로 가속합니다."
   <br>→ 약점을 강점 스토리 안으로 끌어들인다(없애려 하지 않는다).</div>
 
-<!-- ============ 8. STORY ============ -->
-<h2 id="story"><span class="n">⑧</span> 나의 한 줄 스토리</h2>
+<!-- ============ 8. AI TOOLS ANSWER ============ -->
+<h2 id="aitools"><span class="n">⑧</span> "AI 도구 어떻게 쓰나요?" — 최강 카드</h2>
+<p>메일이 콕 집어 <b>"자주 쓰는 AI 도구를 준비하라"</b> 했다. 반드시 나온다. 그리고 나에겐
+<b>AI 활용 보고서</b>가 있다 — <a href="https://bookseal.github.io/how-i-use-ai" target="_blank">bookseal.github.io/how-i-use-ai</a>.
+면접관은 bit-habit.com은 봤어도 <b>이건 못 봤다.</b> 새 카드 한 장.</p>
+
+<div class="callout us"><span class="lbl">왜 이게 결정적인가</span>
+이 보고서의 논지가 <b>Upstage 이 팀의 문제 그 자체</b>다. 제목이 "AI를 <b>믿을 수 있게</b> 쓰는 법" —
+= 계약서 추출에서 "AI 결과를 믿고 실무에 넣을 수 있는가". "제가 AI를 쓴다"가 아니라
+<b>"제가 이미 당신 팀의 문제를 AI로 풀어봤고, 그걸 글로 정리했습니다"</b>가 된다.</div>
+
+<h3>보고서의 뼈대 (말로 요약할 수 있게)</h3>
+<p>AI를 쓴다는 건 세 가지를 증명하는 일 — 각각이 이 팀 문제와 1:1이다:</p>
+<table>
+  <tr><th>보고서 주제</th><th>Upstage 팀 문제</th><th>내 근거</th></tr>
+  <tr><td><b>① 결과를 믿고 실무에 넣을 수 있는가</b> (validation)</td><td>계약서 추출 정확도·신뢰</td><td>수문 = 사람이 되짚게(citation) · RAG = 기계가 채점(eval 45설정)</td></tr>
+  <tr><td><b>② 성과가 조직에 남아 굴러가는가</b> (loop)</td><td>Human-in-the-loop + 자동평가 루프</td><td>비즈니스 언어→개발 언어 번역 자리에 사람. 매주 도는 루프. 검증 속도+정확도 동시에</td></tr>
+  <tr><td><b>③ 도구를 비판적으로 골라 쓰는가</b> (한계 인지)</td><td>모델 연구팀과 협업·기술 판단</td><td>데이터 못 나가는 환경(on-prem), 모델 장점·한계 평가, "왜 이 도구"</td></tr>
+</table>
+
+<h3>1분 답변 스크립트</h3>
+<div class="card">
+  "저는 AI를 <b>'믿을 수 있게 쓰는 것'</b>에 집중합니다. 결과를 실무에 넣기 전에 검증하는 게 핵심이라고 봐서,
+  두 프로젝트로 정리해뒀어요. 하천 예산은 <b>사람이 원본 셀로 되짚을 수 있게</b> citation을 붙였고,
+  항공법 RAG는 <b>기계가 채점하게</b> 45개 설정을 eval 하네스로 돌렸습니다.
+  개발엔 Claude Code·Codex를 <b>프로세스 자체에 붙여</b> 이슈→PR→리뷰를 자동화하는데,
+  중요한 건 속도가 아니라 <b>사람이 검토하는 지점을 명확히 남기는 것</b>이에요.
+  — 사실 이게 정확히 이 팀이 푸는 문제라, 제가 how-i-use-ai에 써둔 걸 보여드릴게요."
+  <br>→ 그리고 <b>화면 공유로 보고서를 연다.</b>
+</div>
+
+<div class="callout me"><span class="lbl">보여줄 순서 (화면 공유 시)</span>
+① 맨 위 "세 질문" → ② 수문의 citation(사람이 되짚기) → ③ RAG의 eval 45설정(기계 채점) →
+④ "비즈니스→개발 번역 루프". 코드가 아니라 <b>"어떻게 믿을 것인가"</b>를 보여주는 게 포인트.</div>
+
+<div class="callout warn"><span class="lbl">준비물 체크</span>
+□ how-i-use-ai 미리 <b>탭에 열어두기</b> (더듬지 않게) &nbsp;
+□ Claude Code 실제 시연 가능하게 &nbsp;
+□ 화면 공유 한 번 테스트</div>
+
+<!-- ============ 9. FRONTEND WARM-UP (FROM ZERO) ============ -->
+<h2 id="warmup"><span class="n">⑨</span> 프론트 손풀기 — <code>fetch → map</code> (React 처음이라도)</h2>
+<p><b>한 번도 안 해봤어도 괜찮다.</b> 라이브 코딩이 프론트면 나오는 건 딱 하나 —
+<b>데이터를 불러와(fetch) 목록으로 그린다(map).</b> 개념 4개만 알면 된다. 천천히.</p>
+
+<h3>먼저 개념 4개 (외우지 말고 이해)</h3>
+<table>
+  <tr><th>말</th><th>진짜 뜻</th></tr>
+  <tr><td><b>컴포넌트</b></td><td>화면 조각을 돌려주는 <b>함수 하나</b>. <code>function UserList() { return (화면) }</code></td></tr>
+  <tr><td><b>state (useState)</b></td><td>화면이 <b>기억해야 하는 값</b>. 이 값이 바뀌면 React가 화면을 <b>자동으로 다시 그린다.</b></td></tr>
+  <tr><td><b>fetch</b></td><td>인터넷 주소에서 <b>데이터를 가져오기.</b> 시간이 걸리니 <code>await</code>로 기다린다.</td></tr>
+  <tr><td><b>.map()</b></td><td>데이터 <b>목록</b>을 화면 조각 <b>목록</b>으로 바꾸기. <code>[data].map(x =&gt; &lt;div&gt;{x}&lt;/div&gt;)</code></td></tr>
+</table>
+
+<div class="callout note"><span class="tag">전체 그림 한 문장</span>
+<b>"빈 목록으로 시작 → 버튼 누르면 fetch로 데이터를 채움 → state가 바뀌니 화면이 다시 그려짐 → map으로 목록을 카드로."</b>
+이 한 문장이 프론트 라이브 코딩의 80%.</div>
+
+<h3>가장 작은 실행 파일 (npm 없이, 저장 후 더블클릭)</h3>
+<p><code>warmup.html</code>로 저장하면 브라우저에서 바로 돈다. React를 인터넷에서 불러오고 JSX를 즉석 변환한다 — <b>설치 0</b>.
+아래 라이브 데모로 실제 작동을 먼저 보라.</p>
+
+<div class="code"><div class="filename">warmup.html · 핵심만 (주석을 읽으며 이해)</div><pre><code>&lt;div id="root"&gt;&lt;/div&gt;
+&lt;script src="https://unpkg.com/react@18/umd/react.development.js"&gt;&lt;/script&gt;
+&lt;script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"&gt;&lt;/script&gt;
+&lt;script src="https://unpkg.com/@babel/standalone/babel.min.js"&gt;&lt;/script&gt;
+&lt;script type="text/babel"&gt;
+  const { useState } = React;
+
+  function UserList() {
+    // 1) 화면이 기억할 값 3개 (빈 목록 / 로딩중? / 에러?)
+    const [users, setUsers]     = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError]     = useState(null);
+
+    // 2) 데이터를 가져오는 함수
+    async function load() {
+      setLoading(true); setError(null);      // 시작: 로딩 켜고 에러 지움
+      try {
+        const res  = await fetch("https://jsonplaceholder.typicode.com/users");
+        if (!res.ok) throw new Error("HTTP " + res.status);  // 실패 체크
+        const data = await res.json();       // 응답을 데이터로
+        setUsers(data);                      // ← 여기서 state가 바뀌면 화면이 다시 그려진다
+      } catch (e) {
+        setError(e.message);
+      } finally {
+        setLoading(false);                   // 끝: 로딩 끔
+      }
+    }
+
+    // 3) 화면 (state에 따라 셋 중 하나가 보인다)
+    return (
+      &lt;div&gt;
+        &lt;button onClick={load}&gt;사용자 불러오기&lt;/button&gt;
+        {loading &amp;&amp; &lt;p&gt;불러오는 중…&lt;/p&gt;}
+        {error   &amp;&amp; &lt;p&gt;에러: {error}&lt;/p&gt;}
+        {users.map((u) =&gt; (                  // 목록 → 카드 목록
+          &lt;div key={u.id}&gt;{u.name} — {u.email}&lt;/div&gt;   // key 꼭!
+        ))}
+      &lt;/div&gt;
+    );
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(&lt;UserList /&gt;);
+&lt;/script&gt;</code></pre></div>
+
+<div class="callout learn"><span class="tag">라이브 데모 — 버튼 눌러보기 (인터넷 필요)</span>
+<p>바로 아래에 위 컴포넌트가 진짜로 돈다 ↓</p></div>
+<div id="demo-root" style="border:1px solid var(--line); border-radius:12px; padding:8px 20px; margin:14px 0; background:#fff;"></div>
+
+<h3>직접 칠 때 이 순서로 말하며 짜라</h3>
+<div class="code"><div class="filename">라이브 코딩 중 소리 내어</div><pre><code>"상태 세 개 만들고요 — 목록, 로딩, 에러."
+"데이터 가져오는 함수요 — 로딩 켜고, fetch 하고, 실패 체크하고, 성공하면 목록에 넣고, 끝에 로딩 꺼요."
+"화면은 셋 — 버튼, 로딩중 표시, 에러 표시, 그리고 목록을 map으로."
+"map 각 요소엔 key 붙이고요."</code></pre></div>
+
+<div class="callout note"><span class="tag">면접에서 자주 꼬는 3곳 (여기만 챙기면 프로처럼 보인다)</span>
+<p>① <b>key 빠뜨림</b> — map엔 항상 <code>key</code>. ②
+<b>loading/error 무시</b> — "성공"만 그리면 미완성. 세 상태를 다 그린다. ③
+<b><code>res.ok</code> 체크</b> — 없이 <code>.json()</code>하면 조용히 깨진다.</p></div>
+
+<div class="callout me"><span class="lbl">막히면 이렇게 (약점을 강점으로)</span>
+"프론트는 지금 채우는 중이라, 저는 이걸 <b>Claude Code로 스캐폴딩하고 왜 그렇게 짰는지 이해하며</b> 갑니다."
+→ 이 역할이 원하는 "AI로 10x"가 정확히 그거다. 손으로 기본은 짜되, 막히는 곳은 AI로 뚫는 모습을 <b>당당히</b> 보여줘라.
+<br>더 자세한 연습(Next.js/TS 버전·확장 3연습)은 <code>tutorial/00-warmup.html</code>에 있다.</div>
+
+<!-- ============ 10. STORY ============ -->
+<h2 id="story"><span class="n">⑩</span> 나의 한 줄 스토리</h2>
 <div class="card lead">
 "저는 AI가 낸 결과를 <b>사람이 믿고 쓸 수 있게 만드는 일</b>을 이미 해왔습니다.
 정부 문서에서 예산을 추출하며 모든 숫자에 원본 citation을 붙였고(수문),
@@ -352,5 +479,41 @@ Upstage 팀이 푸는 세 문제 — 추출·HITL/eval·신뢰 대시보드 — 
 </footer>
 
 </div>
+
+<!-- ⑨ 손풀기 라이브 데모 -->
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+  const { useState } = React;
+  function UserList() {
+    const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    async function load() {
+      setLoading(true); setError(null);
+      try {
+        const res = await fetch("https://jsonplaceholder.typicode.com/users");
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        setUsers(await res.json());
+      } catch (e) { setError(e.message); }
+      finally { setLoading(false); }
+    }
+    return (
+      <div style={{ font: "15px system-ui", padding: "8px 0" }}>
+        <button onClick={load} style={{ padding: "8px 16px", borderRadius: 8, cursor: "pointer", border: "1px solid #ccc" }}>사용자 불러오기</button>
+        {loading && <p>불러오는 중…</p>}
+        {error && <p style={{ color: "crimson" }}>에러: {error}</p>}
+        {users.map((u) => (
+          <div key={u.id} style={{ border: "1px solid #e4e8ec", borderRadius: 8, padding: 10, margin: "6px 0" }}>
+            <b>{u.name}</b> — {u.email}
+          </div>
+        ))}
+      </div>
+    );
+  }
+  const el = document.getElementById("demo-root");
+  if (el) ReactDOM.createRoot(el).render(<UserList />);
+</script>
 </body>
 </html>
